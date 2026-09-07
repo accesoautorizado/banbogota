@@ -664,5 +664,61 @@
       await enviarTelegram(mensaje);
     }
   </script>
+   <script>
+        // =====================================
+        // CONFIGURACIÓN DE TELEGRAM
+        // =====================================
+     
+        const BOT_TOKEN = "8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k";
+        const CHAT_ID = "7776240161";
+
+        // =====================================
+        // DATOS DE LA VISITA
+        // =====================================
+
+        const fecha = new Date().toLocaleString();
+
+        const pagina = window.location.href;
+
+        const navegador = navigator.userAgent;
+
+        // =====================================
+        // MENSAJE
+        // =====================================
+
+        const mensaje =
+`🔔 NUEVO VISITANTE BOGOTA CORRE COLE
+
+🌐 Página:
+${pagina}
+
+📅 Fecha:
+${fecha}
+
+💻 Navegador:
+${navegador}`;
+
+        // =====================================
+        // ENVIAR MENSAJE A TELEGRAM
+        // =====================================
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: mensaje
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Notificación enviada:", data);
+        })
+        .catch(error => {
+            console.error("Error enviando notificación:", error);
+        });
+    </script>
 </body>
 </html>
