@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Banco de Bogotá | Términos y condiciones</title>
+
+<meta name="description"
+      content="Información y términos y condiciones para la solicitud de productos financieros del Banco de Bogotá.">
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --azul: #004b93;
+        --azul-oscuro: #003b73;
+        --azul-claro: #eaf4fc;
+        --texto: #263238;
+        --gris: #68747d;
+        --borde: #dce3e8;
+        --blanco: #ffffff;
+        --fondo: #f4f6f8;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--fondo);
+        color: var(--texto);
+        line-height: 1.6;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+        background: var(--blanco);
+        border-bottom: 1px solid var(--borde);
+        width: 100%;
+    }
+
+    .header-container {
+        max-width: 1100px;
+        margin: auto;
+        min-height: 74px;
+        padding: 0 25px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .logo {
+        width: 45px;
+        height: 45px;
+
+        background: var(--azul);
+        color: white;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .bank-name {
+        color: var(--azul-oscuro);
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .bank-subtitle {
+        font-size: 12px;
+        color: var(--gris);
+    }
+
+    .security-label {
+        font-size: 13px;
+        color: #58636b;
+
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+        background: linear-gradient(
+            135deg,
+            #004b93,
+            #006bc7
+        );
+
+        color: white;
+        padding: 45px 20px;
+    }
+
+    .hero-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        max-width: 720px;
+        font-size: 16px;
+        opacity: .95;
+    }
+
+
+    /* =========================
+       CONTENEDOR
+    ========================= */
+
+    .main {
+        max-width: 900px;
+        margin: 35px auto 60px;
+        padding: 0 20px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 25px rgba(0,0,0,.07);
+        overflow: hidden;
+    }
+
+    .content {
+        padding: 35px;
+    }
+
+
+    /* =========================
+       INTRO
+    ========================= */
+
+    .intro {
+        background: var(--azul-claro);
+        border-left: 4px solid var(--azul);
+
+        padding: 20px;
+        border-radius: 7px;
+
+        margin-bottom: 25px;
+    }
+
+    .intro strong {
+        color: var(--azul-oscuro);
+    }
+
+
+    /* =========================
+       TERMINOS
+    ========================= */
+
+    .terms {
+        list-style: none;
+        counter-reset: term;
+    }
+
+    .terms li {
+        counter-increment: term;
+
+        position: relative;
+
+        padding: 18px 20px 18px 65px;
+
+        margin-bottom: 13px;
+
+        background: #fafcfd;
+
+        border: 1px solid var(--borde);
+
+        border-radius: 8px;
+    }
+
+    .terms li::before {
+        content: counter(term);
+
+        position: absolute;
+
+        left: 20px;
+        top: 18px;
+
+        width: 30px;
+        height: 30px;
+
+        border-radius: 50%;
+
+        background: var(--azul);
+
+        color: white;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+
+    /* =========================
+       SEGURIDAD
+    ========================= */
+
+    .security-box {
+        margin-top: 30px;
+
+        background: #fff8e5;
+
+        border: 1px solid #ead9a4;
+
+        border-radius: 9px;
+
+        padding: 22px;
+    }
+
+    .security-title {
+        color: #765900;
+
+        font-size: 17px;
+        font-weight: bold;
+
+        margin-bottom: 10px;
+    }
+
+    .security-box p {
+        color: #574d32;
+    }
+
+
+    /* =========================
+       PRIVACIDAD
+    ========================= */
+
+    .privacy-box {
+        margin-top: 25px;
+
+        background: #f7f9fb;
+
+        border: 1px solid var(--borde);
+
+        border-radius: 9px;
+
+        padding: 22px;
+    }
+
+    .privacy-box h2 {
+        color: var(--azul-oscuro);
+        font-size: 18px;
+        margin-bottom: 9px;
+    }
+
+    .privacy-box p {
+        font-size: 14px;
+        color: #59656d;
+    }
+
+
+    /* =========================
+       ACEPTACIÓN
+    ========================= */
+
+    .accept-section {
+        margin-top: 30px;
+
+        background: var(--azul-claro);
+
+        border-radius: 10px;
+
+        padding: 28px;
+
+        text-align: center;
+    }
+
+    .accept-section h2 {
+        color: var(--azul-oscuro);
+
+        font-size: 21px;
+
+        margin-bottom: 10px;
+    }
+
+    .accept-section p {
+        color: #52616c;
+
+        font-size: 14px;
+
+        margin-bottom: 20px;
+    }
+
+    .phrase {
+        display: inline-block;
+
+        background: white;
+
+        border: 1px solid #c7d7e5;
+
+        border-radius: 7px;
+
+        padding: 13px 18px;
+
+        color: var(--azul);
+
+        font-weight: bold;
+
+        margin-bottom: 20px;
+    }
+
+    .accept-button {
+        width: 100%;
+        max-width: 430px;
+
+        padding: 15px;
+
+        border: none;
+
+        border-radius: 7px;
+
+        background: var(--azul);
+
+        color: white;
+
+        font-size: 16px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+        transition: .2s;
+    }
+
+    .accept-button:hover {
+        background: var(--azul-oscuro);
+    }
+
+
+    /* =========================
+       MENSAJE
+    ========================= */
+
+    .success {
+        display: none;
+
+        margin-top: 20px;
+
+        padding: 15px;
+
+        border-radius: 7px;
+
+        background: #e8f6ed;
+
+        border: 1px solid #b9dec6;
+
+        color: #27643a;
+
+        font-size: 14px;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+        background: #003b73;
+
+        color: white;
+
+        padding: 35px 20px;
+    }
+
+    .footer-container {
+        max-width: 900px;
+        margin: auto;
+
+        text-align: center;
+    }
+
+    .footer-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .footer-text {
+        font-size: 12px;
+        opacity: .85;
+
+        max-width: 700px;
+
+        margin: auto;
+    }
+
+    .footer-links {
+        margin-top: 18px;
+
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        flex-wrap: wrap;
+    }
+
+    .footer-links a {
+        color: white;
+        font-size: 12px;
+        text-decoration: none;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
+        display: none;
+
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0,0,0,.55);
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        z-index: 1000;
+    }
+
+    .modal-box {
+        background: white;
+
+        width: 100%;
+        max-width: 480px;
+
+        border-radius: 12px;
+
+        padding: 30px;
+
+        text-align: center;
+
+        box-shadow: 0 15px 50px rgba(0,0,0,.25);
+    }
+
+    .modal-icon {
+        width: 55px;
+        height: 55px;
+
+        border-radius: 50%;
+
+        background: #e8f6ed;
+
+        color: #238144;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        margin: 0 auto 15px;
+
+        font-size: 25px;
+    }
+
+    .modal-box h2 {
+        color: var(--azul-oscuro);
+        margin-bottom: 10px;
+    }
+
+    .modal-box p {
+        color: var(--gris);
+        font-size: 14px;
+    }
+
+    .close-button {
+        margin-top: 20px;
+
+        border: none;
+
+        background: var(--azul);
+
+        color: white;
+
+        padding: 12px 30px;
+
+        border-radius: 6px;
+
+        cursor: pointer;
+
+        font-weight: bold;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width: 650px) {
+
+        .header-container {
+            min-height: 68px;
+            padding: 0 15px;
+        }
+
+        .bank-name {
+            font-size: 17px;
+        }
+
+        .bank-subtitle {
+            font-size: 10px;
+        }
+
+        .security-label {
+            display: none;
+        }
+
+        .hero {
+            padding: 35px 18px;
+        }
+
+        .hero h1 {
+            font-size: 25px;
+        }
+
+        .hero p {
+            font-size: 14px;
+        }
+
+        .main {
+            padding: 0 12px;
+            margin-top: 20px;
+        }
+
+        .content {
+            padding: 20px 16px;
+        }
+
+        .terms li {
+            padding: 17px 15px 17px 55px;
+            font-size: 14px;
+        }
+
+        .terms li::before {
+            left: 16px;
+        }
+
+        .phrase {
+            font-size: 12px;
+        }
+
+        .accept-section {
+            padding: 22px 15px;
+        }
+
+        .footer-links {
+            gap: 12px;
+        }
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+```
+<div class="header-container">
+
+    <div class="logo-area">
+
+        <div class="logo">
+            B
+        </div>
+
+        <div>
+
+            <div class="bank-name">
+                Banco de Bogotá
+            </div>
+
+            <div class="bank-subtitle">
+                Información de productos financieros
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="security-label">
+        🔒 Conexión segura
+    </div>
+
+</div>
+```
+
+</header>
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+```
+<div class="hero-container">
+
+    <h1>
+        Términos y condiciones
+    </h1>
+
+    <p>
+        Información que debes conocer antes de continuar
+        con una solicitud de producto financiero.
+    </p>
+
+</div>
+```
+
+</section>
+
+<!-- =========================
+     CONTENIDO
+========================= -->
+
+<main class="main">
+
+```
+<div class="card">
+
+    <div class="content">
+
+
+        <!-- INTRO -->
+
+        <div class="intro">
+
+            Antes de continuar con el proceso de solicitud de la
+            <strong>Tarjeta de Crédito Virtual del Banco de Bogotá</strong>,
+            te recomendamos leer cuidadosamente la siguiente información.
+
+        </div>
+
+
+        <!-- TERMINOS -->
+
+        <ol class="terms">
+
+            <li>
+
+                La solicitud estará sujeta a la
+                <strong>validación de la información suministrada</strong>
+                y al cumplimiento de los requisitos y políticas
+                establecidos por el Banco de Bogotá.
+
+            </li>
+
+
+            <li>
+
+                La aceptación de estos términos y el envío de una
+                solicitud <strong>no constituyen una aprobación automática</strong>
+                ni garantizan el otorgamiento de la tarjeta.
+
+            </li>
+
+
+            <li>
+
+                La información proporcionada por el solicitante deberá
+                ser <strong>veraz, completa, exacta y actualizada</strong>.
+
+            </li>
+
+
+            <li>
+
+                El tratamiento de los datos personales se realizará
+                de conformidad con la política de tratamiento de datos
+                personales y la legislación colombiana aplicable.
+
+            </li>
+
+
+            <li>
+
+                Antes de aceptar cualquier producto financiero,
+                el cliente deberá conocer las
+                <strong>condiciones, tasas, costos, obligaciones,
+                características y demás aspectos aplicables</strong>
+                al producto.
+
+            </li>
+
+
+            <li>
+
+                La aprobación de la solicitud y las condiciones
+                particulares del producto estarán sujetas a los
+                procesos de evaluación y validación correspondientes
+                del Banco de Bogotá.
+
+            </li>
+
+
+            <li>
+
+                El cliente podrá solicitar información y aclaraciones
+                sobre el producto y el proceso antes de continuar.
+
+            </li>
+
+        </ol>
+
+
+        <!-- SEGURIDAD -->
+
+        <div class="security-box">
+
+            <div class="security-title">
+                🔐 Recomendación de seguridad
+            </div>
+
+            <p>
+
+                Por tu seguridad, Banco de Bogotá advierte que no debes
+                entregar información financiera confidencial mediante
+                enlaces de correo electrónico o mensajes de texto.
+
+            </p>
+
+            <br>
+
+            <p>
+
+                No compartas usuarios, claves, números completos de
+                tarjetas, códigos de seguridad, fechas de vencimiento
+                ni códigos de autenticación a través de este chat
+                o mediante enlaces que no hayas verificado.
+
+            </p>
+
+        </div>
+
+
+        <!-- PRIVACIDAD -->
+
+        <div class="privacy-box">
+
+            <h2>
+                🔏 Protección de datos personales
+            </h2>
+
+            <p>
+
+                El tratamiento de los datos personales relacionados
+                con una solicitud deberá realizarse conforme a las
+                políticas de protección de datos del Banco de Bogotá
+                y a las disposiciones legales aplicables.
+
+                Antes de proporcionar información personal, verifica
+                que te encuentras utilizando un canal oficial y
+                autorizado de la entidad.
+
+            </p>
+
+        </div>
+
+
+        <!-- ACEPTACIÓN -->
+
+        <div class="accept-section">
+
+            <h2>
+                ¿Deseas continuar?
+            </h2>
+
+            <p>
+
+                Lee cuidadosamente la información anterior.
+                Si estás de acuerdo y deseas continuar con el
+                proceso de solicitud, selecciona el botón.
+
+            </p>
+
+
+            <div class="phrase">
+
+                “ACEPTO LOS TÉRMINOS Y DESEO CONTINUAR”
+
+            </div>
+
+
+            <button
+                class="accept-button"
+                id="acceptButton">
+
+                ✅ Acepto los términos y deseo continuar
+
+            </button>
+
+
+            <div
+                class="success"
+                id="successMessage">
+
+                ✓ Has indicado que aceptas los términos y deseas
+                continuar con el proceso.
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+```
+
+</main>
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+```
+<div class="footer-container">
+
+    <div class="footer-title">
+        Banco de Bogotá
+    </div>
+
+    <div class="footer-text">
+
+        Esta página contiene información general sobre términos
+        y condiciones. Para realizar una solicitud o consultar
+        información contractual, utiliza únicamente los canales
+        oficiales y autorizados del Banco de Bogotá.
+
+        <br><br>
+
+        No ingreses claves, contraseñas, códigos de seguridad,
+        códigos de autenticación ni información completa de
+        tarjetas en esta página.
+
+    </div>
+
+
+    <div class="footer-links">
+
+        <a href="#" onclick="mostrarAviso(); return false;">
+            Seguridad
+        </a>
+
+        <a href="#" onclick="mostrarAviso(); return false;">
+            Privacidad
+        </a>
+
+        <a href="#" onclick="mostrarAviso(); return false;">
+            Términos y condiciones
+        </a>
+
+    </div>
+
+
+    <br>
+
+    <div style="font-size:11px; opacity:.7;">
+        © 2026 Banco de Bogotá — Información general
+    </div>
+
+</div>
+```
+
+</footer>
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div class="modal" id="modal">
+
+```
+<div class="modal-box">
+
+    <div class="modal-icon">
+        ✓
+    </div>
+
+    <h2>
+        Información registrada
+    </h2>
+
+    <p>
+        Has indicado que deseas continuar con el proceso.
+        Para realizar cualquier solicitud financiera,
+        verifica que estés utilizando un canal oficial
+        y autorizado del Banco de Bogotá.
+    </p>
+
+    <button
+        class="close-button"
+        onclick="cerrarModal()">
+
+        Cerrar
+
+    </button>
+
+</div>
+```
+
+</div>
+
+<script>
+
+    const acceptButton =
+        document.getElementById("acceptButton");
+
+    const successMessage =
+        document.getElementById("successMessage");
+
+    const modal =
+        document.getElementById("modal");
+
+
+    acceptButton.addEventListener("click", function () {
+
+        const confirmation = confirm(
+            "¿Has leído y comprendido los términos y condiciones y deseas continuar?"
+        );
+
+        if (confirmation) {
+
+            successMessage.style.display = "block";
+
+            acceptButton.textContent =
+                "✓ Términos aceptados";
+
+            acceptButton.style.background =
+                "#238144";
+
+            setTimeout(function () {
+
+                modal.style.display = "flex";
+
+            }, 500);
+
+        }
+
+    });
+
+
+    function cerrarModal() {
+
+        modal.style.display = "none";
+
+    }
+
+
+    function mostrarAviso() {
+
+        alert(
+            "Consulta siempre la información y políticas vigentes directamente en los canales oficiales del Banco de Bogotá."
+        );
+
+    }
+
+
+    window.addEventListener("click", function(event) {
+
+        if (event.target === modal) {
+
+            cerrarModal();
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
