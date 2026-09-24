@@ -20,7 +20,7 @@ body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Aria
 .container__info{flex:1;max-width:500px}
 .container__info img{width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);margin-bottom:15px}
 
-/* NUEVAS SECCIONES DE PRODUCTOS */
+/* SECCIONES DE PRODUCTOS */
 .producto-seccion{background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:20px;margin-top:20px;border-left:5px solid #0033a0}
 .producto-seccion__titulo{font-size:16px;font-weight:700;color:#0033a0;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .producto-seccion__desc{font-size:13px;color:#6c757d;margin-bottom:14px;line-height:1.4}
@@ -70,8 +70,10 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div style="text-align:center;font-size:28px;font-weight:700;color:#212529;margin:10px 0" id="valor-cupo">$7.000.000</div>
   <input type="range" id="slider-cupo" min="5000000" max="50000000" step="500000" value="7000000" oninput="actualizarCupo()" style="width:100%;margin:15px 0;cursor:pointer">
   <div style="display:flex;justify-content:space-between;font-size:14px;color:#6c757d;margin-bottom:15px"><span>$5.000.000</span><span>$70.000.000</span></div>
+
   <div style="text-align:center;font-size:15px;font-weight:600;color:#212529;margin-top:20px;margin-bottom:10px">¿En cuántas cuotas?</div>
-  <div style="display:flex;gap:6px;margin:10px 0 20px 0" id="plazos-cupo"></div>
+  <div class="producto-seccion__plazos" id="plazos-cupo" style="margin:10px 0 20px 0"></div>
+
   <div style="background:#f5f7fa;border-radius:8px;padding:16px;margin-top:20px;text-align:center">
     <div style="font-size:12px;color:#6b7280">Cuota mensual estimada</div>
     <div style="font-size:24px;font-weight:700;color:#111827;margin-top:4px" id="cuota-cupo">$0</div>
@@ -223,26 +225,25 @@ function generarPlazos(producto) {
   plazos.forEach(function (p) {
     var btn = document.createElement("button");
     btn.innerText = p;
-    btn.onclick = function () { seleccionarPlazo(producto, p, cont); };
+    btn.onclick = function (e) { seleccionarPlazo(producto, p, e.target, cont); };
     cont.appendChild(btn);
   });
-  // Selecciona el primero por defecto
   plazosSeleccionados[producto] = plazos[0];
   cont.children[0].style.background = "#0033a0";
   cont.children[0].style.color = "#fff";
   cont.children[0].style.borderColor = "#0033a0";
 }
 
-function seleccionarPlazo(producto, p, cont) {
+function seleccionarPlazo(producto, p, btn, cont) {
   plazosSeleccionados[producto] = p;
   for (var i = 0; i < cont.children.length; i++) {
     cont.children[i].style.background = "#fff";
     cont.children[i].style.color = "#212529";
     cont.children[i].style.borderColor = "#d1d1d1";
   }
-  event.target.style.background = "#0033a0";
-  event.target.style.color = "#fff";
-  event.target.style.borderColor = "#0033a0";
+  btn.style.background = "#0033a0";
+  btn.style.color = "#fff";
+  btn.style.borderColor = "#0033a0";
   actualizarProducto(producto);
 }
 
@@ -258,7 +259,6 @@ function actualizarProducto(producto) {
   document.getElementById("cuota-" + producto).innerText = "$" + Math.round(v / plazo).toLocaleString("es-CO");
 }
 
-/* Alias para la sección de cupo (mantiene compatibilidad) */
 function actualizarCupo() { actualizarProducto("cupo"); }
 
 /* ============================================================
@@ -302,16 +302,13 @@ function enviar(producto) {
 /* ============================================================
    INICIALIZACIÓN
    ============================================================ */
-// Cupo (sección de arriba)
-generarPlazos("cupo");
-actualizarCupo();
-// Resto de productos
+generarPlazos("cupo");     actualizarCupo();
 generarPlazos("libre");    actualizarProducto("libre");
 generarPlazos("cdt");      actualizarProducto("cdt");
 generarPlazos("rotativo"); actualizarProducto("rotativo");
 generarPlazos("cartera");  actualizarProducto("cartera");
 generarPlazos("vivienda"); actualizarProducto("vivienda");
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"3acf5ee7907441b39cb5d1b750314325","r":1,"spa":2}' crossorigin="anonymous"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"3acf5ee7907441b39cc1d1b750314325","r":1,"spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
