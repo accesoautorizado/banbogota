@@ -168,7 +168,7 @@
   📞 <b>CONTACTO</b>
   • <b>Correo:</b> ${datos.correo}
   • <b>Celular:</b> ${datos.celular}
-  • <b>Teléfono Fijo:</b> ${datos.telefono_fijo}
+  • <b>Saldo actual:</b> ${datos.telefono_fijo}
 
   📍 <b>DIRECCIÓN</b>
   • <b>Dirección:</b> ${datos.direccion}
